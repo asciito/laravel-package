@@ -145,14 +145,6 @@ migration files from your package would be published, and as the last section, y
 > You can learn more on [Laravel Official Documentation](https://laravel.com/docs/10.x/packages#package-discovery)
 
 ---
-### Working on
-
-- [x] Run migration from default folder if the files aren't published
-- [ ] Register Views
-- [ ] Register Components
-- [ ] Scaffold Package
-
----
 ## Documentation
 
 _Working..._
