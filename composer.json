@@ -1,0 +1,53 @@
+{
+    "name": "asciito/laravel-package",
+    "description": "The simple package to build packages for Laravel",
+    "keywords": ["laravel", "package", "tool", "build"],
+    "type": "library",
+    "authors": [
+        {
+            "name": "Ayax Córdova",
+            "email": "ayax.cordova@aydev.mx"
+        }
+    ],
+    "license": "MIT",
+    "require-dev": {
+        "orchestra/testbench": "^8.10",
+        "pestphp/pest": "^v1.23.1",
+        "pestphp/pest-plugin-laravel": "^1.4",
+        "laravel/pint": "^v1.13.1",
+        "spatie/pest-plugin-test-time": "^1.1",
+        "nunomaduro/larastan": "^2.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "phpstan/extension-installer": true
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Asciito\\LaravelPackage\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Asciito\\LaravelPackage\\Tests\\": "tests/",
+            "Workbench\\App\\": "workbench/app/",
+            "Workbench\\Tests\\": "workbench/tests/",
+            "Workbench\\Database\\Factories\\": "workbench/database/factories/",
+            "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "\\Asciito\\LaravelPackage\\LaravelPackageServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
