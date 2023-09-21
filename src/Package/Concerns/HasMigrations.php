@@ -14,7 +14,7 @@ trait HasMigrations
 
     protected bool $preventLoadDefault = false;
 
-    protected bool $shouldLoadDefault = false;
+    protected bool $shouldIncludeMigrationsFromFolder = false;
 
     public function hasMigrations(): bool
     {
@@ -30,7 +30,7 @@ trait HasMigrations
                 ->all();
         }
 
-        $this->shouldLoadDefault = true;
+        $this->shouldIncludeMigrationsFromFolder = true;
 
         return $this;
     }
@@ -81,7 +81,7 @@ trait HasMigrations
 
     private function shouldLoadDefaultMigrationsFolder(): bool
     {
-        return ! $this->preventLoadDefault && $this->shouldLoadDefault;
+        return ! $this->preventLoadDefault && $this->shouldIncludeMigrationsFromFolder;
     }
 
     private function loadDefaultFolder(): array
