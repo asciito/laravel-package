@@ -81,7 +81,7 @@ trait HasConfig
 
     private function shouldLoadDefaultConfigFolder(): bool
     {
-        return ! $this->preventLoadDefault && $this->shouldLoadDefault;
+        return ! $this->preventLoadDefault && $this->shouldIncludeConfigFromFolder;
     }
 
     private function loadConfigFilesFromFolder(): array
