@@ -68,7 +68,7 @@ abstract class ServiceProviderTest extends TestCase
         );
 
         collect(File::files(database_path('migrations')))
-            ->filter(fn (SplFileInfo $file) => $file->getExtension() === '.php')
+            ->filter(fn (SplFileInfo $file) => $file->getExtension() === 'php')
             ->each(fn (SplFileInfo $file) => File::delete($file));
     }
 }
