@@ -31,16 +31,17 @@ abstract class PackageServiceProvider extends ServiceProvider
     }
 
     /**
-     * Run after all the services have been registered
+     * Run before registering the package
      */
-    public function boot(): void
+    protected function registeringPackage(): void
     {
-        $this->bootingPackage();
-
-        $this->publishPackage();
-
-        $this->packageBooted();
+        //
     }
+
+    /**
+     * Configure the package
+     */
+    abstract protected function configurePackage(Package $package): void;
 
     /**
      * Get the instance of the Package
@@ -65,40 +66,23 @@ abstract class PackageServiceProvider extends ServiceProvider
             ->setBasePath($this->getBasePath())
             ->setConfigPath($package->getBasePath('../config'))
             ->setMigrationPath($package->getBasePath('../database/migrations'))
-            ->setNamespace($this->getNamespace());
+            ->setNamespace((new \ReflectionClass($this))->getNamespaceName());
 
         return $package;
     }
 
-    protected function publishPackage(): void
+    /**
+     * The base path from with in the ServiceProvider has been defined
+     */
+    protected function getBasePath(): string
     {
-        foreach ($this->publishable as $component) {
-            $this->{'publishes'.\Illuminate\Support\Str::title($component)}($this->package);
+        if (empty($this->basePath)) {
+            $filename = (new \ReflectionClass($this))->getFileName();
+
+            $this->basePath = pathinfo($filename, PATHINFO_DIRNAME);
         }
-    }
 
-    /**
-     * Run before booting the package
-     */
-    protected function bootingPackage(): void
-    {
-        //
-    }
-
-    /**
-     * Run after the package has been booted
-     */
-    protected function packageBooted(): void
-    {
-        //
-    }
-
-    /**
-     * Run before registering the package
-     */
-    protected function registeringPackage(): void
-    {
-        //
+        return $this->basePath;
     }
 
     /**
@@ -110,9 +94,39 @@ abstract class PackageServiceProvider extends ServiceProvider
     }
 
     /**
-     * Configure the package
+     * Run after all the services have been registered
      */
-    abstract protected function configurePackage(Package $package): void;
+    public function boot(): void
+    {
+        $this->bootingPackage();
+
+        $this->publishPackage();
+
+        $this->packageBooted();
+    }
+
+    /**
+     * Run before booting the package
+     */
+    protected function bootingPackage(): void
+    {
+        //
+    }
+
+    protected function publishPackage(): void
+    {
+        foreach ($this->publishable as $component) {
+            $this->{'publishes'.\Illuminate\Support\Str::title($component)}($this->package);
+        }
+    }
+
+    /**
+     * Run after the package has been booted
+     */
+    protected function packageBooted(): void
+    {
+        //
+    }
 
     protected function publishesConfig(Package $package): void
     {
@@ -156,20 +170,4 @@ abstract class PackageServiceProvider extends ServiceProvider
             $this->commands($package->getRegisteredCommands()->all());
         }
     }
-
-    /**
-     * The base path from with in the ServiceProvider has been defined
-     */
-    protected function getBasePath(): string
-    {
-        if (empty($this->basePath)) {
-            $filename = (new \ReflectionClass($this))->getFileName();
-
-            $this->basePath = pathinfo($filename, PATHINFO_DIRNAME);
-        }
-
-        return $this->basePath;
-    }
-
-    abstract protected function getNamespace(): string;
 }

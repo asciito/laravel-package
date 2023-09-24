@@ -15,9 +15,4 @@ class ServiceProvider extends PackageServiceProvider
 
         $configClosure($package);
     }
-
-    protected function getNamespace(): string
-    {
-        return __NAMESPACE__;
-    }
 }
