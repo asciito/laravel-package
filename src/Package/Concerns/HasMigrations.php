@@ -3,8 +3,6 @@
 namespace Asciito\LaravelPackage\Package\Concerns;
 
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\File;
-use Symfony\Component\Finder\SplFileInfo;
 
 trait HasMigrations
 {
@@ -52,7 +50,7 @@ trait HasMigrations
     {
         $migrations = $this->loadMigrationsDefaultFolder();
 
-         return collect($this->migrations)
+        return collect($this->migrations)
             ->merge($migrations)
             ->filter(function (bool $_, string $migration) {
                 return ! in_array($migration, $this->excludedMigrations);

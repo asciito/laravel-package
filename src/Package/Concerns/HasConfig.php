@@ -3,8 +3,6 @@
 namespace Asciito\LaravelPackage\Package\Concerns;
 
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\File;
-use Symfony\Component\Finder\SplFileInfo;
 
 trait HasConfig
 {
@@ -60,7 +58,7 @@ trait HasConfig
     {
         $config = $this->loadConfigDefaultFolder();
 
-         return collect($this->configFiles)
+        return collect($this->configFiles)
             ->merge($config)
             ->filter(function (bool $publish, string $config) {
                 return $publish && ! in_array($config, [...$this->excludedConfig, ...$this->unpublishedConfig]);

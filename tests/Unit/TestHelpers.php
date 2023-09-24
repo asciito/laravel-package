@@ -2,7 +2,7 @@
 
 dataset('paths', [
     ['join', 'a', 'path', 'join/a/path'],
-    ['/this', 'is', '../weird/', '/this/is/../weird']
+    ['/this', 'is', '../weird/', '/this/is/../weird'],
 ]);
 
 it('join paths', function (string ...$data) {

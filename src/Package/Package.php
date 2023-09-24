@@ -90,9 +90,7 @@ class Package implements WithCommands, WithConfig, WithMigrations
     /**
      * Get the files from the given path
      *
-     * @param string $path
-     * @param string|array $extensions The extension of the files you want to include
-     * @return Collection
+     * @param  string|array  $extensions The extension of the files you want to include
      */
     protected function loadFilesFrom(string $path, string|array $extensions = 'php'): Collection
     {
