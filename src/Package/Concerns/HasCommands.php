@@ -10,11 +10,27 @@ trait HasCommands
 {
     protected array $commands = [];
 
+    protected bool $preventLoadDefaultCommandsFolder = false;
+
     protected bool $shouldLoadCommandsFromDefaultFolder = false;
+
+    protected array $excludedCommands = [];
 
     public function hasCommands(): bool
     {
-        return filled($this->commands) || $this->shouldLoadCommandsFromDefaultFolder;
+        return $this->shouldLoadDefaultCommandsFolder() || filled($this->commands);
+    }
+
+    private function shouldLoadDefaultCommandsFolder(): bool
+    {
+        return !$this->preventLoadDefaultCommandsFolder && $this->shouldLoadCommandsFromDefaultFolder;
+    }
+
+    public function preventDefaultCommands(): static
+    {
+        $this->preventLoadDefaultCommandsFolder = true;
+
+        return $this;
     }
 
     public function withCommands(string|array ...$command): static
@@ -22,7 +38,6 @@ trait HasCommands
         if (filled($command)) {
             $this->commands = collect($command)
                 ->flatten()
-                ->mapWithKeys(fn (string $value) => [$value => true])
                 ->merge($this->commands)
                 ->all();
         }
@@ -36,29 +51,36 @@ trait HasCommands
     {
         $commands = [];
 
-        if ($this->shouldLoadCommandsFromDefaultFolder) {
+        if ($this->shouldLoadDefaultCommandsFolder()) {
             $commands = $this->loadCommandsFromDefaultFolder();
         }
 
         return collect($this->commands)
             ->merge($commands)
-            ->keys();
+            ->filter(fn (string $command) => !in_array($command, $this->excludedCommands));
     }
 
     public function loadCommandsFromDefaultFolder()
     {
         return collect(File::files($this->getBasePath('Console/Commands')))
             ->filter(fn (SplFileInfo $file) => $file->getExtension() === 'php')
-            ->mapWithKeys(function (SplFileInfo $file) {
-                $fqcn = str($file)
-                    ->after('Console/')
-                    ->replace('/', '\\')
-                    ->remove('.php')
-                    ->prepend($this->getNamespace().'\\Console\\')
-                    ->toString();
-
-                return [$fqcn => true];
-            })
+            ->map(fn (SplFileInfo $file) => str($file)
+                ->after('Console/')
+                ->replace('/', '\\')
+                ->remove('.php')
+                ->prepend($this->getNamespace() . '\\Console\\')
+                ->toString()
+            )
             ->all();
+    }
+
+    /**
+     * Un-register a previously registered command
+     */
+    public function unregisterCommand(string $fqcn): static
+    {
+        $this->excludedCommands[] = $fqcn;
+
+        return $this;
     }
 }

@@ -14,6 +14,14 @@ interface WithCommands
     public function hasCommands(): bool;
 
     /**
+     * Prevent registering the default command folder
+     *
+     * Calling this method ensures that the command files in the default folder
+     * wouldn't be loaded automatically.
+     */
+    public function preventDefaultCommands(): static;
+
+    /**
      * Register the config file(s) for the package
      *
      * By calling this method this will try to load your
@@ -29,4 +37,9 @@ interface WithCommands
      * @return Collection The commands registered in the package
      */
     public function getRegisteredCommands(): Collection;
+
+    /**
+     * Un-register a previously registered command
+     */
+    public function unregisterCommand(string $fqcn): static;
 }
