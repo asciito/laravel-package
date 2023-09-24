@@ -57,4 +57,14 @@ interface WithConfig
      * Get the path to the configuration folder
      */
     public function getConfigPath(string $path = ''): string;
+
+    /**
+     * Un-register a previously registered config
+     */
+    public function unregisterConfig(string $path): static;
+
+    /**
+     * Un-publish a previously published config
+     */
+    public function unpublishConfig(string $path): static;
 }

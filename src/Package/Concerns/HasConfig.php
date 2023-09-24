@@ -14,6 +14,10 @@ trait HasConfig
 
     protected bool $shouldIncludeConfigFromFolder = false;
 
+    protected array $excludeConfig = [];
+
+    protected array $unpublishConfig = [];
+
     public function hasConfig(): bool
     {
         return $this->shouldLoadDefaultConfigFolder() || filled($this->configFiles);
@@ -48,9 +52,12 @@ trait HasConfig
             $config = $this->loadConfigFilesFromFolder();
         }
 
-        return collect($this->configFiles)
+        $register = collect($this->configFiles)
             ->merge($config)
+            ->filter(fn (bool $_, string $config) => ! in_array($config, $this->excludeConfig))
             ->keys();
+
+        return $register;
     }
 
     public function getPublishableConfig(): Collection
@@ -62,8 +69,8 @@ trait HasConfig
         }
 
         return collect($this->configFiles)
-            ->merge($files)
-            ->filter()
+            ->merge([...$files, ...$this->unpublishConfig])
+            ->filter(fn (bool $publish, string $config) => ! in_array($config, $this->excludeConfig))
             ->keys();
     }
 
@@ -77,6 +84,20 @@ trait HasConfig
     public function getConfigPath(string $path = ''): string
     {
         return join_paths($this->configPath, $path);
+    }
+
+    public function unregisterConfig(string $path): static
+    {
+        $this->excludeConfig[] = $path;
+
+        return $this;
+    }
+
+    public function unpublishConfig(string $path): static
+    {
+        $this->unpublishConfig[$path] = false;
+
+        return $this;
     }
 
     private function shouldLoadDefaultConfigFolder(): bool
