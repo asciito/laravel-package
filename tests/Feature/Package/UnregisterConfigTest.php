@@ -3,11 +3,11 @@
 namespace Asciito\LaravelPackage\Tests\Feature\Package;
 
 use Asciito\LaravelPackage\Package\Package;
+
 use function Pest\Laravel\artisan;
 use function PHPUnit\Framework\assertFileDoesNotExist;
 
-trait
-UnregisterConfigTest
+trait UnregisterConfigTest
 {
     protected function configurePackage(Package $package): void
     {
