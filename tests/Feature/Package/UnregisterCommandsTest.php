@@ -4,6 +4,7 @@ use Asciito\LaravelPackage\Package\Package;
 use Symfony\Component\Console\Exception\CommandNotFoundException;
 use Workbench\App\Console\Commands\Extras\PackageTestCommandTwo;
 use Workbench\App\Console\Commands\PackageTestCommandOne;
+
 use function Pest\Laravel\{artisan};
 
 trait UnregisterPackageCommand

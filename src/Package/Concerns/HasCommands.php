@@ -23,7 +23,7 @@ trait HasCommands
 
     private function shouldLoadDefaultCommandsFolder(): bool
     {
-        return !$this->preventLoadDefaultCommandsFolder && $this->shouldLoadCommandsFromDefaultFolder;
+        return ! $this->preventLoadDefaultCommandsFolder && $this->shouldLoadCommandsFromDefaultFolder;
     }
 
     public function preventDefaultCommands(): static
@@ -57,7 +57,7 @@ trait HasCommands
 
         return collect($this->commands)
             ->merge($commands)
-            ->filter(fn (string $command) => !in_array($command, $this->excludedCommands));
+            ->filter(fn (string $command) => ! in_array($command, $this->excludedCommands));
     }
 
     public function loadCommandsFromDefaultFolder()
@@ -68,7 +68,7 @@ trait HasCommands
                 ->after('Console/')
                 ->replace('/', '\\')
                 ->remove('.php')
-                ->prepend($this->getNamespace() . '\\Console\\')
+                ->prepend($this->getNamespace().'\\Console\\')
                 ->toString()
             )
             ->all();

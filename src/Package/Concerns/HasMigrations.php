@@ -25,7 +25,7 @@ trait HasMigrations
 
     private function shouldLoadDefaultMigrationsFolder(): bool
     {
-        return !$this->preventLoadDefaultMigrationFolder && $this->shouldIncludeMigrationsFromFolder;
+        return ! $this->preventLoadDefaultMigrationFolder && $this->shouldIncludeMigrationsFromFolder;
     }
 
     public function withMigrations(string|array $migration = [], bool $publish = true): static
@@ -58,14 +58,14 @@ trait HasMigrations
         return collect($this->migrations)
             ->merge($migrations)
             ->filter(function (bool $_, string $migration) {
-                return !in_array($migration, $this->excludedMigrations);
+                return ! in_array($migration, $this->excludedMigrations);
             })
             ->keys();
     }
 
     private function loadMigrationsDefaultFolder(): array
     {
-        if (!$this->shouldLoadDefaultMigrationsFolder()) {
+        if (! $this->shouldLoadDefaultMigrationsFolder()) {
             return [];
         }
 
@@ -84,7 +84,7 @@ trait HasMigrations
         return collect($this->migrations)
             ->merge($migrations)
             ->filter(function (bool $publish, string $migration) {
-                return $publish && !in_array($migration, [...$this->excludedMigrations, ...$this->unpublishedMigrations]);
+                return $publish && ! in_array($migration, [...$this->excludedMigrations, ...$this->unpublishedMigrations]);
             })
             ->keys();
     }

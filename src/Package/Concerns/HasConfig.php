@@ -25,7 +25,7 @@ trait HasConfig
 
     private function shouldLoadDefaultConfigFolder(): bool
     {
-        return !$this->preventLoadDefaultConfigFolder && $this->shouldIncludeConfigFromFolder;
+        return ! $this->preventLoadDefaultConfigFolder && $this->shouldIncludeConfigFromFolder;
     }
 
     public function withConfig(string|array $config = [], bool $publish = true): static
@@ -56,14 +56,14 @@ trait HasConfig
         return collect($this->configFiles)
             ->merge($config)
             ->filter(function (bool $_, string $config) {
-                return !in_array($config, $this->excludedConfig);
+                return ! in_array($config, $this->excludedConfig);
             })
             ->keys();
     }
 
     private function loadConfigDefaultFolder(): array
     {
-        if (!$this->shouldLoadDefaultConfigFolder()) {
+        if (! $this->shouldLoadDefaultConfigFolder()) {
             return [];
         }
 
@@ -89,7 +89,7 @@ trait HasConfig
         return collect($this->configFiles)
             ->merge($config)
             ->filter(function (bool $publish, string $config) {
-                return $publish && !in_array($config, [...$this->excludedConfig, ...$this->unpublishedConfig]);
+                return $publish && ! in_array($config, [...$this->excludedConfig, ...$this->unpublishedConfig]);
             })
             ->keys();
     }
