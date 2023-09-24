@@ -10,7 +10,7 @@ trait HasMigrations
 
     protected array $migrations = [];
 
-    protected bool $preventLoadDefault = false;
+    protected bool $preventLoadDefaultMigrationFolder = false;
 
     protected bool $shouldIncludeMigrationsFromFolder = false;
 
@@ -21,6 +21,11 @@ trait HasMigrations
     public function hasMigrations(): bool
     {
         return $this->shouldLoadDefaultMigrationsFolder() || filled($this->migrations);
+    }
+
+    private function shouldLoadDefaultMigrationsFolder(): bool
+    {
+        return !$this->preventLoadDefaultMigrationFolder && $this->shouldIncludeMigrationsFromFolder;
     }
 
     public function withMigrations(string|array $migration = [], bool $publish = true): static
@@ -41,7 +46,7 @@ trait HasMigrations
 
     public function preventDefaultMigrations(): static
     {
-        $this->preventLoadDefault = true;
+        $this->preventLoadDefaultMigrationFolder = true;
 
         return $this;
     }
@@ -53,9 +58,23 @@ trait HasMigrations
         return collect($this->migrations)
             ->merge($migrations)
             ->filter(function (bool $_, string $migration) {
-                return ! in_array($migration, $this->excludedMigrations);
+                return !in_array($migration, $this->excludedMigrations);
             })
             ->keys();
+    }
+
+    private function loadMigrationsDefaultFolder(): array
+    {
+        if (!$this->shouldLoadDefaultMigrationsFolder()) {
+            return [];
+        }
+
+        return $this->loadFilesFrom($this->getMigrationPath())->all();
+    }
+
+    public function getMigrationPath(string $path = ''): string
+    {
+        return join_paths($this->migrationsPath, $path);
     }
 
     public function getPublishableMigrations(): Collection
@@ -65,7 +84,7 @@ trait HasMigrations
         return collect($this->migrations)
             ->merge($migrations)
             ->filter(function (bool $publish, string $migration) {
-                return $publish && ! in_array($migration, [...$this->excludedMigrations, ...$this->unpublishedMigrations]);
+                return $publish && !in_array($migration, [...$this->excludedMigrations, ...$this->unpublishedMigrations]);
             })
             ->keys();
     }
@@ -75,11 +94,6 @@ trait HasMigrations
         $this->migrationsPath = rtrim($path, DIRECTORY_SEPARATOR);
 
         return $this;
-    }
-
-    public function getMigrationPath(string $path = ''): string
-    {
-        return join_paths($this->migrationsPath, $path);
     }
 
     /**
@@ -100,19 +114,5 @@ trait HasMigrations
         $this->unpublishedMigrations[] = absolute($path, $this->getMigrationPath());
 
         return $this;
-    }
-
-    private function shouldLoadDefaultMigrationsFolder(): bool
-    {
-        return ! $this->preventLoadDefault && $this->shouldIncludeMigrationsFromFolder;
-    }
-
-    private function loadMigrationsDefaultFolder(): array
-    {
-        if (! $this->shouldLoadDefaultMigrationsFolder()) {
-            return [];
-        }
-
-        return $this->loadFilesFrom($this->getMigrationPath())->all();
     }
 }
