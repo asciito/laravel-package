@@ -4,12 +4,12 @@ namespace Asciito\LaravelPackage\Tests\Feature\Package;
 
 use Asciito\LaravelPackage\Package\Package;
 use Illuminate\Database\QueryException;
+
 use function Pest\Laravel\artisan;
 use function Pest\Laravel\assertDatabaseCount;
 use function PHPUnit\Framework\assertFileDoesNotExist;
 
-trait
-UnregisterMigrationTest
+trait UnregisterMigrationTest
 {
     protected function configurePackage(Package $package): void
     {

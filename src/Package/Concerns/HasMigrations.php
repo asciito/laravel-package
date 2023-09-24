@@ -114,7 +114,6 @@ trait HasMigrations
         return $this;
     }
 
-
     private function shouldLoadDefaultMigrationsFolder(): bool
     {
         return ! $this->preventLoadDefault && $this->shouldIncludeMigrationsFromFolder;

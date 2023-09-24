@@ -2,7 +2,6 @@
 
 use Asciito\LaravelPackage\Package\Package;
 
-use Illuminate\Support\Facades\File;
 use function Pest\Laravel\artisan;
 use function Pest\Laravel\assertDatabaseCount;
 use function PHPUnit\Framework\assertFileExists;

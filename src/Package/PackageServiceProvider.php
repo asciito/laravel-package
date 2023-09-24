@@ -2,7 +2,6 @@
 
 namespace Asciito\LaravelPackage\Package;
 
-use Carbon\Carbon;
 use Illuminate\Support\ServiceProvider;
 
 abstract class PackageServiceProvider extends ServiceProvider
