@@ -55,7 +55,7 @@ trait HasConfig
         $register = collect($this->configFiles)
             ->merge($config)
             ->filter(function (bool $_, string $config) {
-                return ! in_array($this->getConfigName($config), $this->excludedConfig);
+                return ! in_array($this->getFileName($config), $this->excludedConfig);
             })
             ->keys();
 
@@ -73,7 +73,7 @@ trait HasConfig
         $publish = collect($this->configFiles)
             ->merge($config)
             ->filter(function (bool $publish, string $config) {
-                return $publish && ! in_array($this->getConfigName($config), [...$this->excludedConfig, ...$this->unpublishedConfig]);
+                return $publish && ! in_array($this->getFileName($config), [...$this->excludedConfig, ...$this->unpublishedConfig]);
             })
             ->keys();
 
@@ -94,14 +94,14 @@ trait HasConfig
 
     public function unregisterConfig(string $path): static
     {
-        $this->excludedConfig[] = $this->getConfigName($path);
+        $this->excludedConfig[] = $this->getFileName($path);
 
         return $this;
     }
 
     public function unpublishConfig(string $path): static
     {
-        $this->unpublishedConfig[] = $this->getConfigName($path);
+        $this->unpublishedConfig[] = $this->getFileName($path);
 
         return $this;
     }
@@ -119,10 +119,5 @@ trait HasConfig
             ->filter(fn (SplFileInfo $file) => $file->getExtension() === 'php')
             ->mapWithKeys(fn (SplFileInfo $file) => [(string) $file => true])
             ->all();
-    }
-
-    private function getConfigName(string $file): string
-    {
-        return str_replace('.php', '', basename($file));
     }
 }

@@ -96,4 +96,9 @@ class Package implements WithCommands, WithConfig, WithMigrations
     {
         return $this->namespace;
     }
+
+    protected function getFileName(string $file): string
+    {
+        return str_replace('.php', '', basename($file));
+    }
 }
