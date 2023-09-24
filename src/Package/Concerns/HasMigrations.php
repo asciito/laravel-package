@@ -29,6 +29,8 @@ trait HasMigrations
     {
         if (filled($migration)) {
             $this->migrations = collect($migration)
+                ->map(fn (string $migration) => absolute($migration))
+                ->filter()
                 ->mapWithKeys(fn (string $value) => [$value => $publish])
                 ->merge($this->migrations)
                 ->all();
@@ -48,38 +50,26 @@ trait HasMigrations
 
     public function getRegisteredMigrations(): Collection
     {
-        $migrations = [];
+        $migrations = $this->loadMigrationsDefaultFolder();
 
-        if ($this->shouldLoadDefaultMigrationsFolder()) {
-            $migrations = $this->loadDefaultFolder();
-        }
-
-        $register = collect($this->migrations)
+         return collect($this->migrations)
             ->merge($migrations)
             ->filter(function (bool $_, string $migration) {
-                return ! in_array($this->getFileName($migration), $this->excludedMigrations);
+                return ! in_array($migration, $this->excludedMigrations);
             })
             ->keys();
-
-        return $register;
     }
 
     public function getPublishableMigrations(): Collection
     {
-        $migrations = [];
+        $migrations = $this->loadMigrationsDefaultFolder();
 
-        if ($this->shouldLoadDefaultMigrationsFolder()) {
-            $migrations = $this->loadDefaultFolder();
-        }
-
-        $publish = collect($this->migrations)
+        return collect($this->migrations)
             ->merge($migrations)
             ->filter(function (bool $publish, string $migration) {
-                return $publish && ! in_array($this->getFileName($migration), [...$this->excludedMigrations, ...$this->unpublishedMigrations]);
+                return $publish && ! in_array($migration, [...$this->excludedMigrations, ...$this->unpublishedMigrations]);
             })
             ->keys();
-
-        return $publish;
     }
 
     public function setMigrationPath(string $path): static
@@ -99,7 +89,7 @@ trait HasMigrations
      */
     public function unregisterMigration(string $path): static
     {
-        $this->excludedMigrations[] = $this->getFileName($path);
+        $this->excludedMigrations[] = absolute($path, $this->getMigrationPath());
 
         return $this;
     }
@@ -109,7 +99,7 @@ trait HasMigrations
      */
     public function unpublishMigration(string $path): static
     {
-        $this->unpublishedMigrations[] = $this->getFileName($path);
+        $this->unpublishedMigrations[] = absolute($path, $this->getMigrationPath());
 
         return $this;
     }
@@ -119,13 +109,12 @@ trait HasMigrations
         return ! $this->preventLoadDefault && $this->shouldIncludeMigrationsFromFolder;
     }
 
-    private function loadDefaultFolder(): array
+    private function loadMigrationsDefaultFolder(): array
     {
-        $migrations = collect(File::files($this->getMigrationPath()))
-            ->filter(fn (SplFileInfo $file) => $file->getExtension() === 'php')
-            ->mapWithKeys(fn (SplFileInfo $file) => [(string) $file => true])
-            ->all();
+        if (! $this->shouldLoadDefaultMigrationsFolder()) {
+            return [];
+        }
 
-        return $migrations;
+        return $this->loadFilesFrom($this->getMigrationPath())->all();
     }
 }

@@ -9,7 +9,9 @@ use Asciito\LaravelPackage\Package\Contracts\WithCommands;
 use Asciito\LaravelPackage\Package\Contracts\WithConfig;
 use Asciito\LaravelPackage\Package\Contracts\WithMigrations;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
+use Symfony\Component\Finder\SplFileInfo;
 
 class Package implements WithCommands, WithConfig, WithMigrations
 {
@@ -85,6 +87,20 @@ class Package implements WithCommands, WithConfig, WithMigrations
         return join_paths($this->basePath, $path);
     }
 
+    /**
+     * Get the files from the given path
+     *
+     * @param string $path
+     * @param string|array $extensions The extension of the files you want to include
+     * @return Collection
+     */
+    protected function loadFilesFrom(string $path, string|array $extensions = 'php'): Collection
+    {
+        return collect(File::files($path))
+            ->filter(fn (SplFileInfo $file) => in_array($file->getExtension(), (array) $extensions))
+            ->mapWithKeys(fn (SplFileInfo $file) => [(string) $file => true]);
+    }
+
     public function setNamespace(string $namespace): static
     {
         $this->namespace = $namespace;
@@ -95,10 +111,5 @@ class Package implements WithCommands, WithConfig, WithMigrations
     public function getNamespace(): string
     {
         return $this->namespace;
-    }
-
-    protected function getFileName(string $file): string
-    {
-        return str_replace('.php', '', basename($file));
     }
 }

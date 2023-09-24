@@ -46,38 +46,26 @@ trait HasConfig
 
     public function getRegisteredConfig(): Collection
     {
-        $config = [];
+        $config = $this->loadConfigDefaultFolder();
 
-        if ($this->shouldLoadDefaultConfigFolder()) {
-            $config = $this->loadConfigFilesFromFolder();
-        }
-
-        $register = collect($this->configFiles)
+        return collect($this->configFiles)
             ->merge($config)
             ->filter(function (bool $_, string $config) {
-                return ! in_array($this->getFileName($config), $this->excludedConfig);
+                return ! in_array($config, $this->excludedConfig);
             })
             ->keys();
-
-        return $register;
     }
 
     public function getPublishableConfig(): Collection
     {
-        $config = [];
+        $config = $this->loadConfigDefaultFolder();
 
-        if ($this->shouldLoadDefaultConfigFolder()) {
-            $config = $this->loadConfigFilesFromFolder();
-        }
-
-        $publish = collect($this->configFiles)
+         return collect($this->configFiles)
             ->merge($config)
             ->filter(function (bool $publish, string $config) {
-                return $publish && ! in_array($this->getFileName($config), [...$this->excludedConfig, ...$this->unpublishedConfig]);
+                return $publish && ! in_array($config, [...$this->excludedConfig, ...$this->unpublishedConfig]);
             })
             ->keys();
-
-        return $publish;
     }
 
     public function setConfigPath(string $path): static
@@ -94,14 +82,14 @@ trait HasConfig
 
     public function unregisterConfig(string $path): static
     {
-        $this->excludedConfig[] = $this->getFileName($path);
+        $this->excludedConfig[] = absolute($path, $this->getConfigPath());
 
         return $this;
     }
 
     public function unpublishConfig(string $path): static
     {
-        $this->unpublishedConfig[] = $this->getFileName($path);
+        $this->unpublishedConfig[] = absolute($path, $this->getConfigPath());
 
         return $this;
     }
@@ -111,13 +99,12 @@ trait HasConfig
         return ! $this->preventLoadDefault && $this->shouldIncludeConfigFromFolder;
     }
 
-    private function loadConfigFilesFromFolder(): array
+    private function loadConfigDefaultFolder(): array
     {
-        $files = File::files($this->getConfigPath());
+        if (! $this->shouldLoadDefaultConfigFolder()) {
+            return [];
+        }
 
-        return collect($files)
-            ->filter(fn (SplFileInfo $file) => $file->getExtension() === 'php')
-            ->mapWithKeys(fn (SplFileInfo $file) => [(string) $file => true])
-            ->all();
+        return $this->loadFilesFrom($this->getConfigPath())->all();
     }
 }
