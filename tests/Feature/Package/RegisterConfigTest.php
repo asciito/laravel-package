@@ -3,24 +3,25 @@
 use Asciito\LaravelPackage\Package\Package;
 
 use function Pest\Laravel\{ artisan };
+use function PHPUnit\Framework\assertFileDoesNotExist;
 use function PHPUnit\Framework\assertFileExists;
 
-trait PackageWithConfig
+trait RegisterConfig
 {
     protected function configurePackage(Package $package): void
     {
         $package
-            ->setName('laravel-package')
-            ->preventDefaultConfig()
+            ->setName('register-configuration')
             ->withConfig([
                 $package->getConfigPath('one.php'),
                 $package->getConfigPath('two.php'),
-                $package->getConfigPath('extra/three.php'),
-            ]);
+            ])
+            ->withConfig($package->getConfigPath('extra/three.php'), false)
+            ->preventDefaultConfig();
     }
 }
 
-uses(PackageWithConfig::class);
+uses(RegisterConfig::class);
 
 it('register config', function () {
     expect(config('one.key'))
@@ -32,10 +33,9 @@ it('register config', function () {
 });
 
 it('publish config files', function () {
-    artisan('vendor:publish', ['--tag' => 'laravel-package-config'])
-        ->doesntExpectOutputToContain('No publishable resources for tag [laravel-package-config]')
-        ->assertSuccessful();
+    artisan('vendor:publish', ['--tag' => 'register-configuration-config'])->run();
 
     assertFileExists(config_path('one.php'));
     assertFileExists(config_path('two.php'));
+    assertFileDoesNotExist(config_path('three.php'));
 });

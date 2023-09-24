@@ -7,22 +7,22 @@ use Asciito\LaravelPackage\Package\Package;
 use function Pest\Laravel\artisan;
 use function PHPUnit\Framework\assertFileDoesNotExist;
 
-trait UnregisterConfigTest
+trait UnregisterConfig
 {
     protected function configurePackage(Package $package): void
     {
         $package
-            ->setName('unregister')
+            ->setName('unregistered-unpublished-configuration')
             ->withConfig($package->getConfigPath('extra/three.php'))
-            ->unregisterConfig($package->getConfigPath('one.php'))
-            ->unpublishConfig($package->getConfigPath('extra/three.php'));
+            ->unregisterConfig('one.php')
+            ->unpublishConfig('three.php');
     }
 }
 
-uses(UnregisterConfigTest::class);
+uses(UnregisterConfig::class);
 
 test('un-register config', function () {
-    artisan('vendor:publish', ['--tag' => 'unregister-config'])->run();
+    artisan('vendor:publish', ['--tag' => 'unregistered-unpublished-configuration-config'])->run();
 
     expect(config('one.key'))
         ->toBeNull();
@@ -31,10 +31,10 @@ test('un-register config', function () {
 });
 
 test('un-publish config', function () {
-    artisan('vendor:publish', ['--tag' => 'unregister-config'])->run();
+    artisan('vendor:publish', ['--tag' => 'unregistered-unpublished-configuration-config'])->run();
+
+    assertFileDoesNotExist(config_path('three.key'));
 
     expect(config('three.key'))
         ->toBe('three');
-
-    assertFileDoesNotExist(config_path('three.key'));
 });

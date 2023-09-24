@@ -14,9 +14,9 @@ trait HasConfig
 
     protected bool $shouldIncludeConfigFromFolder = false;
 
-    protected array $excludeConfig = [];
+    protected array $excludedConfig = [];
 
-    protected array $unpublishConfig = [];
+    protected array $unpublishedConfig = [];
 
     public function hasConfig(): bool
     {
@@ -54,7 +54,9 @@ trait HasConfig
 
         $register = collect($this->configFiles)
             ->merge($config)
-            ->filter(fn (bool $_, string $config) => ! in_array($config, $this->excludeConfig))
+            ->filter(function (bool $_, string $config) {
+                return ! in_array($this->getConfigName($config), $this->excludedConfig);
+            })
             ->keys();
 
         return $register;
@@ -62,16 +64,20 @@ trait HasConfig
 
     public function getPublishableConfig(): Collection
     {
-        $files = [];
+        $config = [];
 
         if ($this->shouldLoadDefaultConfigFolder()) {
-            $files = $this->loadConfigFilesFromFolder();
+            $config = $this->loadConfigFilesFromFolder();
         }
 
-        return collect($this->configFiles)
-            ->merge([...$files, ...$this->unpublishConfig])
-            ->filter(fn (bool $publish, string $config) => ! in_array($config, $this->excludeConfig))
+        $publish = collect($this->configFiles)
+            ->merge($config)
+            ->filter(function (bool $publish, string $config) {
+                return $publish && ! in_array($this->getConfigName($config), [...$this->excludedConfig, ...$this->unpublishedConfig]);
+            })
             ->keys();
+
+        return $publish;
     }
 
     public function setConfigPath(string $path): static
@@ -88,14 +94,14 @@ trait HasConfig
 
     public function unregisterConfig(string $path): static
     {
-        $this->excludeConfig[] = $path;
+        $this->excludedConfig[] = $this->getConfigName($path);
 
         return $this;
     }
 
     public function unpublishConfig(string $path): static
     {
-        $this->unpublishConfig[$path] = false;
+        $this->unpublishedConfig[] = $this->getConfigName($path);
 
         return $this;
     }
@@ -113,5 +119,10 @@ trait HasConfig
             ->filter(fn (SplFileInfo $file) => $file->getExtension() === 'php')
             ->mapWithKeys(fn (SplFileInfo $file) => [(string) $file => true])
             ->all();
+    }
+
+    private function getConfigName(string $file): string
+    {
+        return str_replace('.php', '', basename($file));
     }
 }
