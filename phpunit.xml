@@ -14,6 +14,7 @@
     </testsuites>
     <php>
         <env name="DB_CONNECTION" value="testing"/>
+        <env name="DB_DATABASE" value=":memory:"/>
         <env name="RAY_ENABLED" value="(true)"/>
         <env name="SEND_CACHE_TO_RAY" value="(false)"/>
         <env name="SEND_DUMPS_TO_RAY" value="(true)"/>

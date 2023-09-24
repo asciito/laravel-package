@@ -56,4 +56,14 @@ interface WithMigrations
      * Get the path to the migrations folder
      */
     public function getMigrationPath(string $path = ''): string;
+
+    /**
+     * Un-register a previously registered migration
+     */
+    public function unregisterMigration(string $path): static;
+
+    /**
+     * Un-publish a previously published migration
+     */
+    public function unpublishMigration(string $path): static;
 }

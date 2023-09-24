@@ -135,22 +135,16 @@ abstract class PackageServiceProvider extends ServiceProvider
         if ($package->hasMigrations()) {
             $this->publishes(
                 $package->getPublishableMigrations()
-                    ->mapWithKeys(function (string $migration, int|string $index) {
-                        if (preg_match('/^\d{4}_\d{2}_\d{2}_/', $migration)) {
-                            return $migration;
-                        }
+                    ->mapWithKeys(function (string $migration) {
+                        $databaseMigration = database_path('migrations/'.basename($migration));
 
-                        $date = Carbon::now()->format('Y_m_d');
-
-                        $index = str($index)->padLeft(6, '0');
-
-                        return [
-                            $migration => database_path('migrations/'.$date.'_'.$index.'_'.basename($migration)),
-                        ];
+                        return [$migration => $databaseMigration];
                     })
                     ->all(),
                 $package->prefixWithPackageName('migrations')
             );
+
+            $this->loadMigrationsFrom($package->getRegisteredMigrations()->all());
         }
     }
 

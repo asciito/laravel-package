@@ -16,6 +16,10 @@ trait HasMigrations
 
     protected bool $shouldIncludeMigrationsFromFolder = false;
 
+    protected array $excludedMigrations = [];
+
+    protected array $unpublishedMigrations = [];
+
     public function hasMigrations(): bool
     {
         return $this->shouldLoadDefaultMigrationsFolder() || filled($this->migrations);
@@ -50,7 +54,14 @@ trait HasMigrations
             $migrations = $this->loadDefaultFolder();
         }
 
-        return collect($this->migrations)->keys();
+        $register = collect($this->migrations)
+            ->merge($migrations)
+            ->filter(function (bool $_, string $migration) {
+                return ! in_array($this->getFileName($migration), $this->excludedMigrations);
+            })
+            ->keys();
+
+        return $register;
     }
 
     public function getPublishableMigrations(): Collection
@@ -61,10 +72,14 @@ trait HasMigrations
             $migrations = $this->loadDefaultFolder();
         }
 
-        return collect($this->migrations)
+        $publish = collect($this->migrations)
             ->merge($migrations)
-            ->filter()
+            ->filter(function (bool $publish, string $migration) {
+                return $publish && ! in_array($this->getFileName($migration), [...$this->excludedMigrations, ...$this->unpublishedMigrations]);
+            })
             ->keys();
+
+        return $publish;
     }
 
     public function setMigrationPath(string $path): static
@@ -78,6 +93,27 @@ trait HasMigrations
     {
         return join_paths($this->migrationsPath, $path);
     }
+
+    /**
+     * Un-register a previously registered migration
+     */
+    public function unregisterMigration(string $path): static
+    {
+        $this->excludedMigrations[] = $this->getFileName($path);
+
+        return $this;
+    }
+
+    /**
+     * Un-publish a previously published migration
+     */
+    public function unpublishMigration(string $path): static
+    {
+        $this->unpublishedMigrations[] = $this->getFileName($path);
+
+        return $this;
+    }
+
 
     private function shouldLoadDefaultMigrationsFolder(): bool
     {
