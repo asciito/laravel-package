@@ -20,6 +20,7 @@ trait NestedServiceProviderWithMigrations
             ->toBe($package->getBasePath('../../database/migrations/nested'))
             ->getPublishableMigrations()
             ->not->toBeEmpty()
+            ->toHaveCount(2)
             ->each
             ->toStartWith($package->getMigrationPath())
             ->toMatch('/\/\w+.php$/');
@@ -28,15 +29,18 @@ trait NestedServiceProviderWithMigrations
 
 uses(NestedServiceProviderWithMigrations::class);
 
+it('register migrations', function () {
+    artisan('migrate')->run();
+
+    assertdatabasecount('nested_test_one', 0);
+    assertdatabasecount('nested_test_one', 0);
+});
+
 it('publish migrations', function () {
     artisan('vendor:publish', ['--tag' => 'nested-service-migrations'])->run();
 
-    assertFileExists(database_path('migrations/2023_01_01_000000_create_nested_test_one_table.php'));
-    assertFileExists(database_path('migrations/2023_01_01_000001_create_nested_test_two_table.php'));
-});
-
-it('run published migrations', function () {
-    artisan('vendor:publish', ['--tag' => 'nested-service-migrations'])->run();
+    assertFileExists(database_path('migrations/create_nested_test_one_table.php'));
+    assertFileExists(database_path('migrations/create_nested_test_two_table.php'));
 
     artisan('migrate')->assertSuccessful();
 

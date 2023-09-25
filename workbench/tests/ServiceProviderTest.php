@@ -5,6 +5,7 @@ namespace Workbench\Tests;
 use Asciito\LaravelPackage\Package\Package;
 use Asciito\LaravelPackage\Tests\TestCase;
 use Illuminate\Support\Facades\File;
+use Symfony\Component\Finder\SplFileInfo;
 use Workbench\App\Nested\NestedServiceProvider;
 use Workbench\App\ServiceProvider;
 
@@ -16,6 +17,8 @@ abstract class ServiceProviderTest extends TestCase
         'one.php',
         'two.php',
         'three.php',
+        'nested-one.php',
+        'nested-two.php',
     ];
 
     protected function setUp(): void
@@ -64,6 +67,8 @@ abstract class ServiceProviderTest extends TestCase
                 ->all()
         );
 
-        File::cleanDirectory(database_path('migrations'));
+        collect(File::files(database_path('migrations')))
+            ->filter(fn (SplFileInfo $file) => $file->getExtension() === 'php')
+            ->each(fn (SplFileInfo $file) => File::delete($file));
     }
 }

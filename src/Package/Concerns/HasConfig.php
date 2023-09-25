@@ -3,8 +3,6 @@
 namespace Asciito\LaravelPackage\Package\Concerns;
 
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\File;
-use Symfony\Component\Finder\SplFileInfo;
 
 trait HasConfig
 {
@@ -12,11 +10,22 @@ trait HasConfig
 
     protected array $configFiles = [];
 
+    protected bool $preventLoadDefaultConfigFolder = false;
+
     protected bool $shouldIncludeConfigFromFolder = false;
+
+    protected array $excludedConfig = [];
+
+    protected array $unpublishedConfig = [];
 
     public function hasConfig(): bool
     {
         return $this->shouldLoadDefaultConfigFolder() || filled($this->configFiles);
+    }
+
+    private function shouldLoadDefaultConfigFolder(): bool
+    {
+        return ! $this->preventLoadDefaultConfigFolder && $this->shouldIncludeConfigFromFolder;
     }
 
     public function withConfig(string|array $config = [], bool $publish = true): static
@@ -35,36 +44,35 @@ trait HasConfig
 
     public function preventDefaultConfig(): static
     {
-        $this->preventLoadDefault = true;
+        $this->preventLoadDefaultConfigFolder = true;
 
         return $this;
     }
 
     public function getRegisteredConfig(): Collection
     {
-        $config = [];
-
-        if ($this->shouldLoadDefaultConfigFolder()) {
-            $config = $this->loadConfigFilesFromFolder();
-        }
+        $config = $this->loadConfigDefaultFolder();
 
         return collect($this->configFiles)
             ->merge($config)
+            ->filter(function (bool $_, string $config) {
+                return ! in_array($config, $this->excludedConfig);
+            })
             ->keys();
     }
 
-    public function getPublishableConfig(): Collection
+    private function loadConfigDefaultFolder(): array
     {
-        $files = [];
-
-        if ($this->shouldLoadDefaultConfigFolder()) {
-            $files = $this->loadConfigFilesFromFolder();
+        if (! $this->shouldLoadDefaultConfigFolder()) {
+            return [];
         }
 
-        return collect($this->configFiles)
-            ->merge($files)
-            ->filter()
-            ->keys();
+        return $this->loadFilesFrom($this->getConfigPath())->all();
+    }
+
+    public function getConfigPath(string $path = ''): string
+    {
+        return join_paths($this->configPath, $path);
     }
 
     public function setConfigPath(string $path): static
@@ -74,23 +82,29 @@ trait HasConfig
         return $this;
     }
 
-    public function getConfigPath(string $path = ''): string
+    public function getPublishableConfig(): Collection
     {
-        return join_paths($this->configPath, $path);
+        $config = $this->loadConfigDefaultFolder();
+
+        return collect($this->configFiles)
+            ->merge($config)
+            ->filter(function (bool $publish, string $config) {
+                return $publish && ! in_array($config, [...$this->excludedConfig, ...$this->unpublishedConfig]);
+            })
+            ->keys();
     }
 
-    private function shouldLoadDefaultConfigFolder(): bool
+    public function unregisterConfig(string $path): static
     {
-        return ! $this->preventLoadDefault && $this->shouldIncludeConfigFromFolder;
+        $this->excludedConfig[] = absolute($path, $this->getConfigPath());
+
+        return $this;
     }
 
-    private function loadConfigFilesFromFolder(): array
+    public function unpublishConfig(string $path): static
     {
-        $files = File::files($this->getConfigPath());
+        $this->unpublishedConfig[] = absolute($path, $this->getConfigPath());
 
-        return collect($files)
-            ->filter(fn (SplFileInfo $file) => $file->getExtension() === 'php')
-            ->mapWithKeys(fn (SplFileInfo $file) => [(string) $file => true])
-            ->all();
+        return $this;
     }
 }

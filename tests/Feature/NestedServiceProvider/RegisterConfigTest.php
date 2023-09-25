@@ -5,7 +5,7 @@ use Asciito\LaravelPackage\Package\Package;
 use function Pest\Laravel\{ artisan };
 use function PHPUnit\Framework\assertFileExists;
 
-trait NestedServiceProviderWithConfig
+trait NestedServiceProviderConfig
 {
     protected function configureNestedService(Package $package): void
     {
@@ -24,7 +24,7 @@ trait NestedServiceProviderWithConfig
     }
 }
 
-uses(NestedServiceProviderWithConfig::class);
+uses(NestedServiceProviderConfig::class);
 
 it('register config', function () {
     expect(config('nested-one.key'))

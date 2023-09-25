@@ -3,8 +3,6 @@
 namespace Asciito\LaravelPackage\Package\Concerns;
 
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\File;
-use Symfony\Component\Finder\SplFileInfo;
 
 trait HasMigrations
 {
@@ -12,19 +10,30 @@ trait HasMigrations
 
     protected array $migrations = [];
 
-    protected bool $preventLoadDefault = false;
+    protected bool $preventLoadDefaultMigrationFolder = false;
 
     protected bool $shouldIncludeMigrationsFromFolder = false;
+
+    protected array $excludedMigrations = [];
+
+    protected array $unpublishedMigrations = [];
 
     public function hasMigrations(): bool
     {
         return $this->shouldLoadDefaultMigrationsFolder() || filled($this->migrations);
     }
 
+    private function shouldLoadDefaultMigrationsFolder(): bool
+    {
+        return ! $this->preventLoadDefaultMigrationFolder && $this->shouldIncludeMigrationsFromFolder;
+    }
+
     public function withMigrations(string|array $migration = [], bool $publish = true): static
     {
         if (filled($migration)) {
             $this->migrations = collect($migration)
+                ->map(fn (string $migration) => absolute($migration))
+                ->filter()
                 ->mapWithKeys(fn (string $value) => [$value => $publish])
                 ->merge($this->migrations)
                 ->all();
@@ -37,33 +46,46 @@ trait HasMigrations
 
     public function preventDefaultMigrations(): static
     {
-        $this->preventLoadDefault = true;
+        $this->preventLoadDefaultMigrationFolder = true;
 
         return $this;
     }
 
     public function getRegisteredMigrations(): Collection
     {
-        $migrations = [];
+        $migrations = $this->loadMigrationsDefaultFolder();
 
-        if ($this->shouldLoadDefaultMigrationsFolder()) {
-            $migrations = $this->loadDefaultFolder();
+        return collect($this->migrations)
+            ->merge($migrations)
+            ->filter(function (bool $_, string $migration) {
+                return ! in_array($migration, $this->excludedMigrations);
+            })
+            ->keys();
+    }
+
+    private function loadMigrationsDefaultFolder(): array
+    {
+        if (! $this->shouldLoadDefaultMigrationsFolder()) {
+            return [];
         }
 
-        return collect($this->migrations)->keys();
+        return $this->loadFilesFrom($this->getMigrationPath())->all();
+    }
+
+    public function getMigrationPath(string $path = ''): string
+    {
+        return join_paths($this->migrationsPath, $path);
     }
 
     public function getPublishableMigrations(): Collection
     {
-        $migrations = [];
-
-        if ($this->shouldLoadDefaultMigrationsFolder()) {
-            $migrations = $this->loadDefaultFolder();
-        }
+        $migrations = $this->loadMigrationsDefaultFolder();
 
         return collect($this->migrations)
             ->merge($migrations)
-            ->filter()
+            ->filter(function (bool $publish, string $migration) {
+                return $publish && ! in_array($migration, [...$this->excludedMigrations, ...$this->unpublishedMigrations]);
+            })
             ->keys();
     }
 
@@ -74,23 +96,23 @@ trait HasMigrations
         return $this;
     }
 
-    public function getMigrationPath(string $path = ''): string
+    /**
+     * Un-register a previously registered migration
+     */
+    public function unregisterMigration(string $path): static
     {
-        return join_paths($this->migrationsPath, $path);
+        $this->excludedMigrations[] = absolute($path, $this->getMigrationPath());
+
+        return $this;
     }
 
-    private function shouldLoadDefaultMigrationsFolder(): bool
+    /**
+     * Un-publish a previously published migration
+     */
+    public function unpublishMigration(string $path): static
     {
-        return ! $this->preventLoadDefault && $this->shouldIncludeMigrationsFromFolder;
-    }
+        $this->unpublishedMigrations[] = absolute($path, $this->getMigrationPath());
 
-    private function loadDefaultFolder(): array
-    {
-        $migrations = collect(File::files($this->getMigrationPath()))
-            ->filter(fn (SplFileInfo $file) => $file->getExtension() === 'php')
-            ->mapWithKeys(fn (SplFileInfo $file) => [(string) $file => true])
-            ->all();
-
-        return $migrations;
+        return $this;
     }
 }

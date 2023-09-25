@@ -12,6 +12,7 @@ for me.
 ## Installation and usage
 
 Just run the command: 
+
 ```shell
 composer require asciito/laravel-package
 ```
@@ -60,11 +61,6 @@ class LaravelPackageServiceProvider extends PackageServiceProvider
     protected function configurePackage(Package $package): void
     {
         $package->setName('<your-package-name>');
-    }
-
-    protected function getNamespace(): string
-    {
-        return __NAMESPACE__;
     }
 }
 ```
