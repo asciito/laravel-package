@@ -1,6 +1,7 @@
 <?php
 
 use Asciito\LaravelPackage\Package\Package;
+
 use function Pest\Laravel\artisan;
 use function PHPUnit\Framework\assertFileDoesNotExist;
 
@@ -21,9 +22,9 @@ uses(PackageRegisterConfigTest::class);
 test('package has registered files from folder', function () {
     expect($this->package)
         ->getPublishableConfig()
-            ->toHaveCount(4)
+        ->toHaveCount(4)
         ->getRegisteredConfig()
-            ->toHaveCount(4);
+        ->toHaveCount(4);
 });
 
 test('package register config files without publishing it', function () {
@@ -33,33 +34,33 @@ test('package register config files without publishing it', function () {
 
     expect(config())
         ->get('one.key')
-            ->toBe('one')
+        ->toBe('one')
         ->get('two.key')
-            ->toBe('two')
+        ->toBe('two')
         ->get('three.key')
-            ->toBe('three')
+        ->toBe('three')
         ->and(config_path('one.php'))
-            ->not->toBeFile()
+        ->not->toBeFile()
         ->and(config_path('two.php'))
-            ->not->toBeFile()
+        ->not->toBeFile()
         ->and(config_path('three.php'))
-            ->not->toBeFile();
+        ->not->toBeFile();
 });
 
 it('publish package config files', function () {
     artisan('vendor:publish', ['--tag' => 'package-config'])->assertOk();
 
     expect(config_path('one.php'))
-            ->toBeFile()
+        ->toBeFile()
         ->and(config_path('two.php'))
-            ->toBeFile()
+        ->toBeFile()
         ->and(config_path('three.php'))
-            ->toBeFile()
+        ->toBeFile()
         ->and(config())
-            ->get('one.key')
-                ->toBe('one')
-            ->get('two.key')
-                ->toBe('two')
-            ->get('three.key')
-                ->toBe('three');
+        ->get('one.key')
+        ->toBe('one')
+        ->get('two.key')
+        ->toBe('two')
+        ->get('three.key')
+        ->toBe('three');
 });

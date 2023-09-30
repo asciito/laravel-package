@@ -1,7 +1,7 @@
 <?php
 
 use Asciito\LaravelPackage\Package\Package;
-use function Orchestra\Testbench\workbench_path;
+
 use function Pest\Laravel\artisan;
 use function PHPUnit\Framework\assertFileDoesNotExist;
 use function PHPUnit\Framework\assertFileExists;
@@ -31,21 +31,21 @@ uses(PackageUnRegisterConfigTest::class);
 test('package has register config files manually', function () {
     expect($this->package)
         ->getPublishableConfig()
-            ->toHaveCount(1)
+        ->toHaveCount(1)
         ->getRegisteredConfig()
-            ->toHaveCount(2);
+        ->toHaveCount(2);
 });
 
 test('package has no default config files register', function () {
     expect(config())
         ->get('one.key')
-            ->toBeNull()
+        ->toBeNull()
         ->get('two.key')
-            ->toBeNull()
+        ->toBeNull()
         ->get('three.key')
-            ->toBe('three')
+        ->toBe('three')
         ->get('four.key')
-            ->toBe('four');
+        ->toBe('four');
 });
 
 it('publish just one config file', function () {
@@ -56,11 +56,10 @@ it('publish just one config file', function () {
 
     expect(config())
         ->get('three.key')
-            ->toBe('three')
+        ->toBe('three')
         ->get('four.key')
-            ->toBe('four');
+        ->toBe('four');
 
     assertFileDoesNotExist(config_path('three.php'));
     assertFileExists(config_path('four.php'));
 });
-

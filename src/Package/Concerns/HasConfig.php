@@ -52,7 +52,6 @@ trait HasConfig
             ->filter(fn (string $config) => ! in_array($config, $this->getExclude('config')->all()));
     }
 
-
     public function getPublishableConfig(): Collection
     {
         $files = $this->getDefaultConfigFiles();

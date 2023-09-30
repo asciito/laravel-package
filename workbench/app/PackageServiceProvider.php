@@ -9,7 +9,7 @@ class PackageServiceProvider extends \Asciito\LaravelPackage\Package\PackageServ
     public static \Closure $configureClosure;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function configurePackage(Package $package): void
     {

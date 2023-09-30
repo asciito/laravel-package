@@ -138,7 +138,6 @@ class Package implements WithCommands, WithConfig, WithMigrations
         return $this;
     }
 
-
     protected function getExclude(string $component): Collection
     {
         $key = $this->prefixWithPackageName($component, '.');
@@ -168,5 +167,4 @@ class Package implements WithCommands, WithConfig, WithMigrations
             ->filter(fn (SplFileInfo $file) => $file->getExtension() === 'php')
             ->map(fn (SplFileInfo $file): string => $file);
     }
-
 }

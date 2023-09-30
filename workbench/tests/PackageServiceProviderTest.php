@@ -6,9 +6,7 @@ use Asciito\LaravelPackage\Package\Package;
 use Asciito\LaravelPackage\Tests\TestCase;
 use Illuminate\Support\Facades\File;
 use Symfony\Component\Finder\SplFileInfo;
-use Workbench\App\Nested\NestedServiceProvider;
 use Workbench\App\PackageServiceProvider;
-use Workbench\App\ServiceProvider;
 
 use function Spatie\PestPluginTestTime\testTime;
 
