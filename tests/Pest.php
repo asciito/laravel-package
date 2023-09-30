@@ -12,9 +12,12 @@
 */
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Workbench\Tests\ServiceProviderTest;
+use Workbench\Tests\PackageServiceProviderTest;
 
-uses(ServiceProviderTest::class, RefreshDatabase::class)->in('Feature');
+uses(
+    PackageServiceProviderTest::class,
+    RefreshDatabase::class
+)->in('Feature');
 
 /*
 |--------------------------------------------------------------------------

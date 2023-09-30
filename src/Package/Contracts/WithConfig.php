@@ -29,12 +29,9 @@ interface WithConfig
     public function withConfig(string|array $config = [], bool $publish = true): static;
 
     /**
-     * Prevent publishing the default config folder
-     *
-     * Calling this method ensures that the config files in the default folder
-     * wouldn't be loaded automatically.
+     * Exclude a config from being register
      */
-    public function preventDefaultConfig(): static;
+    public function excludeConfig(string|array $path): static;
 
     /**
      * An array with the config file(s) registered
@@ -59,12 +56,15 @@ interface WithConfig
     public function getConfigPath(string $path = ''): string;
 
     /**
-     * Un-register a previously registered config
+     * Get the files from the config path
      */
-    public function unregisterConfig(string $path): static;
+    public function getDefaultConfigFiles(): Collection;
 
     /**
-     * Un-publish a previously published config
+     * Prevent publishing the default config folder
+     *
+     * Calling this method ensures that the config files in the default folder
+     * wouldn't be loaded automatically.
      */
-    public function unpublishConfig(string $path): static;
+    public function preventDefaultConfig(): static;
 }
