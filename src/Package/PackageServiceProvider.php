@@ -145,17 +145,11 @@ abstract class PackageServiceProvider extends ServiceProvider
     {
         if ($package->hasMigrations()) {
             $this->publishes(
-                $package->getPublishableMigrations()
-                    ->mapWithKeys(function (string $migration) {
-                        $databaseMigration = database_path('migrations/'.basename($migration));
-
-                        return [$migration => $databaseMigration];
-                    })
-                    ->all(),
+                $package->getPublishableMigration()->all(),
                 $package->prefixWithPackageName('migrations')
             );
 
-            $this->loadMigrationsFrom($package->getRegisteredMigrations()->all());
+            $this->loadMigrationsFrom($package->getRegisteredMigration()->all());
         }
     }
 

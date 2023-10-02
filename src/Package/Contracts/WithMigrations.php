@@ -23,47 +23,48 @@ interface WithMigrations
      * By calling this method this will try to load your migration
      * file(s) from the default migration folder of your package.
      *
+     * @param  string|string[]  $migration The file(s) you want to register
      * @param  bool  $publish if the file(s) should be publishable, by default is true
      */
-    public function withMigrations(string|array $migration = [], bool $publish = true): static;
+    public function withMigration(string|array $migration = [], bool $publish = true): static;
 
     /**
-     * Prevent publishing the default migrations
-     *
-     * Calling this method ensures that the migrations in the default folder
-     * wouldn't be loaded automatically.
+     * Exclude a migration from being register
      */
-    public function preventDefaultMigrations(): static;
+    public function excludeMigration(string|array $path): static;
 
     /**
      * An array with the migration file(s) registered
      *
      * @return Collection The migration file(s) registered in the package
      */
-    public function getRegisteredMigrations(): Collection;
+    public function getRegisteredMigration(): Collection;
 
     /**
      * Get the array with the publishable migration file(s)
      */
-    public function getPublishableMigrations(): Collection;
+    public function getPublishableMigration(): Collection;
 
     /**
-     * Set the path to the migrations folder
+     * Set the path to the migration folder
      */
     public function setMigrationPath(string $path): static;
 
     /**
-     * Get the path to the migrations folder
+     * Get the path to the migration folder
      */
     public function getMigrationPath(string $path = ''): string;
 
     /**
-     * Un-register a previously registered migration
+     * Get the files from the migration path
      */
-    public function unregisterMigration(string $path): static;
+    public function getDefaultMigrationFiles(): Collection;
 
     /**
-     * Un-publish a previously published migration
+     * Prevent publishing the default migration folder
+     *
+     * Calling this method ensures that the migration files in the default folder
+     * wouldn't be loaded automatically.
      */
-    public function unpublishMigration(string $path): static;
+    public function preventDefaultMigration(): static;
 }

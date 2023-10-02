@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('package_tests');
+        Schema::dropIfExists('package_test_three');
     }
 };

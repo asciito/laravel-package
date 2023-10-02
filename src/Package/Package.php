@@ -10,8 +10,10 @@ use Asciito\LaravelPackage\Package\Contracts\WithConfig;
 use Asciito\LaravelPackage\Package\Contracts\WithMigrations;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use Symfony\Component\Finder\SplFileInfo;
 
 class Package implements WithCommands, WithConfig, WithMigrations
@@ -166,5 +168,13 @@ class Package implements WithCommands, WithConfig, WithMigrations
         return collect(File::files($path))
             ->filter(fn (SplFileInfo $file) => $file->getExtension() === 'php')
             ->map(fn (SplFileInfo $file): string => $file);
+    }
+    public function makeMigrationName(string $migration): string
+    {
+        if (Str::isMatch('/\d{4}_\d{2}_\d{2}_\d{6}/', $migration)) {
+            return $migration;
+        }
+
+        return Carbon::now()->format('Y_m_d_His_').trim($migration, '_');
     }
 }
