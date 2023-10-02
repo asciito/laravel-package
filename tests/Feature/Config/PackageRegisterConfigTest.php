@@ -3,7 +3,6 @@
 use Asciito\LaravelPackage\Package\Package;
 
 use function Pest\Laravel\artisan;
-use function PHPUnit\Framework\assertFileDoesNotExist;
 
 trait PackageRegisterConfigTest
 {
@@ -22,29 +21,33 @@ uses(PackageRegisterConfigTest::class);
 test('package has registered files from folder', function () {
     expect($this->package)
         ->getPublishableConfig()
-        ->toHaveCount(4)
+            ->toHaveCount(4)
         ->getRegisteredConfig()
-        ->toHaveCount(4);
+            ->toHaveCount(4);
 });
 
 test('package register config files without publishing it', function () {
-    assertFileDoesNotExist(config_path('one.php'));
-    assertFileDoesNotExist(config_path('two.php'));
-    assertFileDoesNotExist(config_path('three.php'));
+    expect(config_path('one.php'))
+        ->not->toBeFile()
+    ->and(config_path('two.php'))
+        ->not->toBeFile()
 
-    expect(config())
+    ->and(config_path('three.php'))
+        ->not->toBeFile()
+
+    ->and(config_path('four.php'))
+        ->not->toBeFile()
+
+    ->and(config())
         ->get('one.key')
-        ->toBe('one')
+            ->toBe('one')
         ->get('two.key')
-        ->toBe('two')
+            ->toBe('two')
         ->get('three.key')
-        ->toBe('three')
-        ->and(config_path('one.php'))
-        ->not->toBeFile()
-        ->and(config_path('two.php'))
-        ->not->toBeFile()
-        ->and(config_path('three.php'))
-        ->not->toBeFile();
+            ->toBe('three')
+        ->get('four.key')
+            ->toBe('four');
+
 });
 
 it('publish package config files', function () {
@@ -52,15 +55,18 @@ it('publish package config files', function () {
 
     expect(config_path('one.php'))
         ->toBeFile()
-        ->and(config_path('two.php'))
+
+    ->and(config_path('two.php'))
         ->toBeFile()
-        ->and(config_path('three.php'))
+
+    ->and(config_path('three.php'))
         ->toBeFile()
-        ->and(config())
+
+    ->and(config())
         ->get('one.key')
-        ->toBe('one')
+            ->toBe('one')
         ->get('two.key')
-        ->toBe('two')
+            ->toBe('two')
         ->get('three.key')
-        ->toBe('three');
+            ->toBe('three');
 });

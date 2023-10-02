@@ -132,9 +132,7 @@ abstract class PackageServiceProvider extends ServiceProvider
     {
         if ($package->hasConfig()) {
             $this->publishes(
-                $this->package->getPublishableConfig()
-                    ->mapWithKeys(fn (string $config) => [$config => config_path(basename($config))])
-                    ->all(),
+                $this->package->getPublishableConfig()->all(),
                 $package->prefixWithPackageName('config'),
             );
         }

@@ -48,21 +48,22 @@ trait HasConfig
 
         return $files
             ->merge($this->getRegister('config'))
-            ->keys()
-            ->filter(fn (string $config) => ! in_array($config, $this->getExclude('config')->all()));
+            ->except($this->getExclude('config'))
+            ->keys();
     }
+
 
     public function getPublishableConfig(): Collection
     {
         $files = $this->getDefaultConfigFiles();
 
-        return $files->merge($this->getRegister('config'))
-            ->filter(function (bool $publish, string $path) {
-                $include = ! in_array($path, $this->getExclude('config')->all());
-
-                return $include && $publish;
-            })
-            ->keys();
+        return $files
+            ->merge($this->getRegister('config'))
+            ->filter()
+            ->except($this->getExclude('config'))
+            ->mapWithKeys(fn (bool $_, string $path) => [
+                $path => config_path(basename($path))
+            ]);
     }
 
     public function getConfigPath(string $path = ''): string

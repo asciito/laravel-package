@@ -31,35 +31,39 @@ uses(PackageUnRegisterConfigTest::class);
 test('package has register config files manually', function () {
     expect($this->package)
         ->getPublishableConfig()
-        ->toHaveCount(1)
+            ->toHaveCount(1)
         ->getRegisteredConfig()
-        ->toHaveCount(2);
+            ->toHaveCount(2);
 });
 
 test('package has no default config files register', function () {
     expect(config())
         ->get('one.key')
-        ->toBeNull()
+            ->toBeNull()
         ->get('two.key')
-        ->toBeNull()
+            ->toBeNull()
         ->get('three.key')
-        ->toBe('three')
+            ->toBe('three')
         ->get('four.key')
-        ->toBe('four');
+            ->toBe('four');
 });
 
 it('publish just one config file', function () {
-    assertFileDoesNotExist(config_path('four.php'));
+    expect(config_path('four.php'))
+        ->not->toBeFile();
 
     artisan('vendor:publish', ['--tag' => 'unregister-package-config'])
         ->assertSuccessful();
 
     expect(config())
         ->get('three.key')
-        ->toBe('three')
+            ->toBe('three')
         ->get('four.key')
-        ->toBe('four');
+            ->toBe('four')
 
-    assertFileDoesNotExist(config_path('three.php'));
-    assertFileExists(config_path('four.php'));
+    ->and(config_path('three.php'))
+        ->not->toBeFile()
+
+    ->and(config_path('four.php'))
+        ->toBeFile();
 });
