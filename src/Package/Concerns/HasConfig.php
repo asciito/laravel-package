@@ -52,7 +52,6 @@ trait HasConfig
             ->keys();
     }
 
-
     public function getPublishableConfig(): Collection
     {
         $files = $this->getDefaultConfigFiles();
@@ -62,7 +61,7 @@ trait HasConfig
             ->filter()
             ->except($this->getExclude('config'))
             ->mapWithKeys(fn (bool $_, string $path) => [
-                $path => config_path(basename($path))
+                $path => config_path(basename($path)),
             ]);
     }
 

@@ -169,6 +169,7 @@ class Package implements WithCommands, WithConfig, WithMigrations
             ->filter(fn (SplFileInfo $file) => $file->getExtension() === 'php')
             ->map(fn (SplFileInfo $file): string => $file);
     }
+
     public function makeMigrationName(string $migration): string
     {
         if (Str::isMatch('/\d{4}_\d{2}_\d{2}_\d{6}/', $migration)) {

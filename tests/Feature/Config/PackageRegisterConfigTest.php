@@ -21,32 +21,29 @@ uses(PackageRegisterConfigTest::class);
 test('package has registered files from folder', function () {
     expect($this->package)
         ->getPublishableConfig()
-            ->toHaveCount(4)
+        ->toHaveCount(4)
         ->getRegisteredConfig()
-            ->toHaveCount(4);
+        ->toHaveCount(4);
 });
 
 test('package register config files without publishing it', function () {
     expect(config_path('one.php'))
         ->not->toBeFile()
-    ->and(config_path('two.php'))
+        ->and(config_path('two.php'))
         ->not->toBeFile()
-
-    ->and(config_path('three.php'))
+        ->and(config_path('three.php'))
         ->not->toBeFile()
-
-    ->and(config_path('four.php'))
+        ->and(config_path('four.php'))
         ->not->toBeFile()
-
-    ->and(config())
+        ->and(config())
         ->get('one.key')
-            ->toBe('one')
+        ->toBe('one')
         ->get('two.key')
-            ->toBe('two')
+        ->toBe('two')
         ->get('three.key')
-            ->toBe('three')
+        ->toBe('three')
         ->get('four.key')
-            ->toBe('four');
+        ->toBe('four');
 
 });
 
@@ -55,18 +52,15 @@ it('publish package config files', function () {
 
     expect(config_path('one.php'))
         ->toBeFile()
-
-    ->and(config_path('two.php'))
+        ->and(config_path('two.php'))
         ->toBeFile()
-
-    ->and(config_path('three.php'))
+        ->and(config_path('three.php'))
         ->toBeFile()
-
-    ->and(config())
+        ->and(config())
         ->get('one.key')
-            ->toBe('one')
+        ->toBe('one')
         ->get('two.key')
-            ->toBe('two')
+        ->toBe('two')
         ->get('three.key')
-            ->toBe('three');
+        ->toBe('three');
 });

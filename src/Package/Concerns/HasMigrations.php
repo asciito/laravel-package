@@ -52,7 +52,6 @@ trait HasMigrations
             ->keys();
     }
 
-
     public function getPublishableMigration(): Collection
     {
         $files = $this->getDefaultMigrationFiles();
@@ -62,7 +61,7 @@ trait HasMigrations
             ->filter()
             ->except($this->getExclude('migrations'))
             ->mapWithKeys(fn (bool $_, string $path) => [
-                $path => database_path('migrations/'.basename($path))
+                $path => database_path('migrations/'.basename($path)),
             ]);
     }
 
