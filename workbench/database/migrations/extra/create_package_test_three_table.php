@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('nested_test_one', function (Blueprint $table) {
+        Schema::create('package_test_three', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
         });
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('nested_tests');
+        Schema::dropIfExists('package_test_three');
     }
 };

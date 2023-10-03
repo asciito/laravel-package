@@ -2,39 +2,32 @@
 
 namespace Asciito\LaravelPackage\Package\Concerns;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
 trait HasConfig
 {
     protected string $configPath;
 
-    protected array $configFiles = [];
-
     protected bool $preventLoadDefaultConfigFolder = false;
 
     protected bool $shouldIncludeConfigFromFolder = false;
 
-    protected array $excludedConfig = [];
-
-    protected array $unpublishedConfig = [];
-
     public function hasConfig(): bool
     {
-        return $this->shouldLoadDefaultConfigFolder() || filled($this->configFiles);
-    }
-
-    private function shouldLoadDefaultConfigFolder(): bool
-    {
-        return ! $this->preventLoadDefaultConfigFolder && $this->shouldIncludeConfigFromFolder;
+        return $this->shouldLoadDefaultConfigFolder()
+            || $this->getRegister('config')->isNotEmpty();
     }
 
     public function withConfig(string|array $config = [], bool $publish = true): static
     {
+        $this->ensureRegistersInitialize('config');
+
         if (filled($config)) {
-            $this->configFiles = collect($config)
-                ->mapWithKeys(fn (string $value) => [$value => $publish])
-                ->merge($this->configFiles)
-                ->all();
+            $this->register(
+                'config',
+                Arr::mapWithKeys(Arr::wrap($config), fn (string $path): array => [$path => $publish])
+            );
         }
 
         $this->shouldIncludeConfigFromFolder = true;
@@ -42,32 +35,34 @@ trait HasConfig
         return $this;
     }
 
-    public function preventDefaultConfig(): static
+    public function excludeConfig(string|array $path): static
     {
-        $this->preventLoadDefaultConfigFolder = true;
+        $this->exclude('config', Arr::wrap($path));
 
         return $this;
     }
 
     public function getRegisteredConfig(): Collection
     {
-        $config = $this->loadConfigDefaultFolder();
+        $files = $this->getDefaultConfigFiles();
 
-        return collect($this->configFiles)
-            ->merge($config)
-            ->filter(function (bool $_, string $config) {
-                return ! in_array($config, $this->excludedConfig);
-            })
+        return $files
+            ->merge($this->getRegister('config'))
+            ->except($this->getExclude('config'))
             ->keys();
     }
 
-    private function loadConfigDefaultFolder(): array
+    public function getPublishableConfig(): Collection
     {
-        if (! $this->shouldLoadDefaultConfigFolder()) {
-            return [];
-        }
+        $files = $this->getDefaultConfigFiles();
 
-        return $this->loadFilesFrom($this->getConfigPath())->all();
+        return $files
+            ->merge($this->getRegister('config'))
+            ->filter()
+            ->except($this->getExclude('config'))
+            ->mapWithKeys(fn (bool $_, string $path) => [
+                $path => config_path(basename($path)),
+            ]);
     }
 
     public function getConfigPath(string $path = ''): string
@@ -82,29 +77,25 @@ trait HasConfig
         return $this;
     }
 
-    public function getPublishableConfig(): Collection
+    public function getDefaultConfigFiles(): Collection
     {
-        $config = $this->loadConfigDefaultFolder();
+        if (! $this->shouldLoadDefaultConfigFolder()) {
+            return collect();
+        }
 
-        return collect($this->configFiles)
-            ->merge($config)
-            ->filter(function (bool $publish, string $config) {
-                return $publish && ! in_array($config, [...$this->excludedConfig, ...$this->unpublishedConfig]);
-            })
-            ->keys();
+        return $this->getFilesFrom($this->configPath)
+            ->mapWithKeys(fn (string $path) => [$path => true]);
     }
 
-    public function unregisterConfig(string $path): static
+    public function preventDefaultConfig(): static
     {
-        $this->excludedConfig[] = absolute($path, $this->getConfigPath());
+        $this->preventLoadDefaultConfigFolder = true;
 
         return $this;
     }
 
-    public function unpublishConfig(string $path): static
+    private function shouldLoadDefaultConfigFolder(): bool
     {
-        $this->unpublishedConfig[] = absolute($path, $this->getConfigPath());
-
-        return $this;
+        return ! $this->preventLoadDefaultConfigFolder && $this->shouldIncludeConfigFromFolder;
     }
 }

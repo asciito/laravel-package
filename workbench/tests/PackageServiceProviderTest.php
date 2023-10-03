@@ -6,26 +6,28 @@ use Asciito\LaravelPackage\Package\Package;
 use Asciito\LaravelPackage\Tests\TestCase;
 use Illuminate\Support\Facades\File;
 use Symfony\Component\Finder\SplFileInfo;
-use Workbench\App\Nested\NestedServiceProvider;
-use Workbench\App\ServiceProvider;
+use Workbench\App\PackageServiceProvider;
 
 use function Spatie\PestPluginTestTime\testTime;
 
-abstract class ServiceProviderTest extends TestCase
+abstract class PackageServiceProviderTest extends TestCase
 {
+    protected Package $package;
+
     protected static array $configFilesNames = [
         'one.php',
         'two.php',
         'three.php',
-        'nested-one.php',
-        'nested-two.php',
+        'four.php',
     ];
 
     protected function setUp(): void
     {
-        ServiceProvider::$configurePackageUsing = fn (Package $package) => $this->configurePackage($package);
+        PackageServiceProvider::$configureClosure = function (Package $package) {
+            $this->package = $package;
 
-        NestedServiceProvider::$configureNestedUsing = fn (Package $package) => $this->configureNestedService($package);
+            $this->configurePackage($package);
+        };
 
         testTime()->freeze('2023-01-01 00:00:00');
 
@@ -34,21 +36,12 @@ abstract class ServiceProviderTest extends TestCase
         $this->deletePublishable();
     }
 
-    protected function configurePackage(Package $package): void
-    {
-        //
-    }
-
-    protected function configureNestedService(Package $package): void
-    {
-        //
-    }
+    abstract protected function configurePackage(Package $package): void;
 
     protected function getPackageProviders($app): array
     {
         return [
-            NestedServiceProvider::class,
-            ServiceProvider::class,
+            PackageServiceProvider::class,
         ];
     }
 

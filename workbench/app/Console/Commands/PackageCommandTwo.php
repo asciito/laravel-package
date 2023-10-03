@@ -1,31 +1,31 @@
 <?php
 
-namespace Workbench\App\Nested\Console\Commands;
+namespace Workbench\App\Console\Commands;
 
 use Illuminate\Console\Command;
 
-class ProjectTestCommandOne extends Command
+class PackageCommandTwo extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'project:one';
+    protected $signature = 'package:test-two';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Project Command Test One';
+    protected $description = 'Package Test Two';
 
     /**
      * Execute the console command.
      */
     public function handle(): int
     {
-        $this->info('Project command one');
+        $this->info('Package test two');
 
         return self::SUCCESS;
     }

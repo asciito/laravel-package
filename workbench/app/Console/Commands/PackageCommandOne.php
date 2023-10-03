@@ -4,28 +4,28 @@ namespace Workbench\App\Console\Commands;
 
 use Illuminate\Console\Command;
 
-class PackageTestCommandOne extends Command
+class PackageCommandOne extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'package:one';
+    protected $signature = 'package:test-one';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Package Command Test One';
+    protected $description = 'Package Test One';
 
     /**
      * Execute the console command.
      */
     public function handle(): int
     {
-        $this->info('Package command one');
+        $this->info('Package test one');
 
         return self::SUCCESS;
     }

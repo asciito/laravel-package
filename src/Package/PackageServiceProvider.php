@@ -132,9 +132,7 @@ abstract class PackageServiceProvider extends ServiceProvider
     {
         if ($package->hasConfig()) {
             $this->publishes(
-                $this->package->getPublishableConfig()
-                    ->mapWithKeys(fn (string $config) => [$config => config_path(basename($config))])
-                    ->all(),
+                $this->package->getPublishableConfig()->all(),
                 $package->prefixWithPackageName('config'),
             );
         }
@@ -147,17 +145,11 @@ abstract class PackageServiceProvider extends ServiceProvider
     {
         if ($package->hasMigrations()) {
             $this->publishes(
-                $package->getPublishableMigrations()
-                    ->mapWithKeys(function (string $migration) {
-                        $databaseMigration = database_path('migrations/'.basename($migration));
-
-                        return [$migration => $databaseMigration];
-                    })
-                    ->all(),
+                $package->getPublishableMigration()->all(),
                 $package->prefixWithPackageName('migrations')
             );
 
-            $this->loadMigrationsFrom($package->getRegisteredMigrations()->all());
+            $this->loadMigrationsFrom($package->getRegisteredMigration()->all());
         }
     }
 
@@ -166,8 +158,8 @@ abstract class PackageServiceProvider extends ServiceProvider
      */
     protected function publishesCommands(Package $package): void
     {
-        if ($package->hasCommands()) {
-            $this->commands($package->getRegisteredCommands()->all());
+        if ($package->hasCommand()) {
+            $this->commands($package->getRegisteredCommand()->all());
         }
     }
 }

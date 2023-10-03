@@ -2,25 +2,28 @@
 
 namespace Asciito\LaravelPackage\Package;
 
-use Asciito\LaravelPackage\Package\Concerns\HasCommands;
+use Asciito\LaravelPackage\Package\Concerns\HasCommand;
 use Asciito\LaravelPackage\Package\Concerns\HasConfig;
-use Asciito\LaravelPackage\Package\Concerns\HasMigrations;
-use Asciito\LaravelPackage\Package\Contracts\WithCommands;
+use Asciito\LaravelPackage\Package\Concerns\HasMigration;
+use Asciito\LaravelPackage\Package\Contracts\WithCommand;
 use Asciito\LaravelPackage\Package\Contracts\WithConfig;
-use Asciito\LaravelPackage\Package\Contracts\WithMigrations;
+use Asciito\LaravelPackage\Package\Contracts\WithMigration;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use Symfony\Component\Finder\SplFileInfo;
 
-class Package implements WithCommands, WithConfig, WithMigrations
+class Package implements WithCommand, WithConfig, WithMigration
 {
-    use HasCommands, HasConfig, HasMigrations;
+    use HasCommand, HasConfig, HasMigration;
 
     /**
      * @var string The package name
      */
-    protected string $name;
+    protected string $name = 'laravel-package';
 
     /**
      * @var string Base path for the package
@@ -31,6 +34,10 @@ class Package implements WithCommands, WithConfig, WithMigrations
      * @var string Package namespace
      */
     protected string $namespace;
+
+    public static array $register = [];
+
+    public static array $excluded = [];
 
     /**
      * Set the package name
@@ -106,15 +113,69 @@ class Package implements WithCommands, WithConfig, WithMigrations
         return $this;
     }
 
-    /**
-     * Get the files from the given path
-     *
-     * @param  string|array  $extensions  The file extension(s) you want to include
-     */
-    protected function loadFilesFrom(string $path, string|array $extensions = 'php'): Collection
+    public function ensureRegistersInitialize($component): void
     {
+        $key = $this->prefixWithPackageName($component, '.');
+
+        data_fill(static::$excluded, $key, []);
+        data_fill(static::$register, $key, []);
+    }
+
+    protected function getRegister(string $component): Collection
+    {
+        $key = $this->prefixWithPackageName($component, '.');
+
+        return collect(data_get(static::$register, $key));
+    }
+
+    protected function register(string $component, mixed $data): static
+    {
+        $package = $this->name();
+
+        static::$register[$package][$component] = array_merge(
+            static::$register[$package][$component],
+            Arr::wrap($data),
+        );
+
+        return $this;
+    }
+
+    protected function getExclude(string $component): Collection
+    {
+        $key = $this->prefixWithPackageName($component, '.');
+
+        return collect(data_get(static::$excluded, $key));
+    }
+
+    protected function exclude(string $component, mixed $data): static
+    {
+        $package = $this->name();
+
+        static::$excluded[$package][$component] = array_merge(
+            static::$excluded[$package][$component],
+            Arr::wrap($data),
+        );
+
+        return $this;
+    }
+
+    public function getFilesFrom(string $path): Collection
+    {
+        if (! File::exists($path)) {
+            return collect();
+        }
+
         return collect(File::files($path))
-            ->filter(fn (SplFileInfo $file) => in_array($file->getExtension(), (array) $extensions))
-            ->mapWithKeys(fn (SplFileInfo $file) => [(string) $file => true]);
+            ->filter(fn (SplFileInfo $file) => $file->getExtension() === 'php')
+            ->map(fn (SplFileInfo $file): string => $file);
+    }
+
+    public function makeMigrationName(string $migration): string
+    {
+        if (Str::isMatch('/\d{4}_\d{2}_\d{2}_\d{6}/', $migration)) {
+            return $migration;
+        }
+
+        return Carbon::now()->format('Y_m_d_His_').trim($migration, '_');
     }
 }
