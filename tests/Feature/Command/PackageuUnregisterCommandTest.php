@@ -3,8 +3,8 @@
 namespace Asciito\LaravelPackage\Tests\Feature\Command;
 
 use Asciito\LaravelPackage\Package\Package;
-
 use Symfony\Component\Console\Exception\CommandNotFoundException;
+
 use function Pest\Laravel\artisan;
 
 trait PackageUnregisterCommandTest
@@ -47,10 +47,10 @@ it('run registered commands', function () {
         artisan('package:test-two')
             ->assertFailed();
     })->toThrow(CommandNotFoundException::class)
-    ->and(function () {
-        artisan('package:test-three')
-            ->assertFailed();
-    })->toThrow(CommandNotFoundException::class);
+        ->and(function () {
+            artisan('package:test-three')
+                ->assertFailed();
+        })->toThrow(CommandNotFoundException::class);
 
     artisan('package:test-four')
         ->expectsOutput('Package test four')

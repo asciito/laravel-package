@@ -57,13 +57,12 @@ trait HasCommand
 
         return $this->getFilesFrom($this->getBasePath('console/commands'))
             ->map(fn (string $path): string => Str::of($path)
-                    ->basename('.php')
-                    ->prepend(
-                        '\\',
-                        $this->getNamespace(),
-                        '\\Console\\Commands\\',
-                    )
-                ,
+                ->basename('.php')
+                ->prepend(
+                    '\\',
+                    $this->getNamespace(),
+                    '\\Console\\Commands\\',
+                ),
             );
 
     }
