@@ -4,7 +4,7 @@ namespace Asciito\LaravelPackage\Package\Contracts;
 
 use Illuminate\Support\Collection;
 
-interface WithMigrations
+interface WithMigration
 {
     /**
      * Check if the package has migration file(s) available

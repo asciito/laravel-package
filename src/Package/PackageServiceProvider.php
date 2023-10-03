@@ -158,8 +158,8 @@ abstract class PackageServiceProvider extends ServiceProvider
      */
     protected function publishesCommands(Package $package): void
     {
-        if ($package->hasCommands()) {
-            $this->commands($package->getRegisteredCommands()->all());
+        if ($package->hasCommand()) {
+            $this->commands($package->getRegisteredCommand()->all());
         }
     }
 }

@@ -5,7 +5,7 @@ namespace Asciito\LaravelPackage\Package\Concerns;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
-trait HasMigrations
+trait HasMigration
 {
     protected string $migrationPath;
 
