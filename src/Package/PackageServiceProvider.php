@@ -2,6 +2,7 @@
 
 namespace Asciito\LaravelPackage\Package;
 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\ServiceProvider;
 
 abstract class PackageServiceProvider extends ServiceProvider
@@ -160,6 +161,14 @@ abstract class PackageServiceProvider extends ServiceProvider
     {
         if ($package->hasCommand()) {
             $this->commands($package->getRegisteredCommand()->all());
+        }
+
+        if ($package->hasInstallCommand()) {
+            $command = Artisan::command($package->getInstallCommandSignature(), function () use ($package) {
+                $package->command($this); // @phpstan-ignore-line
+            });
+
+            $package->preConfigureInstallCommand($command);
         }
     }
 }
