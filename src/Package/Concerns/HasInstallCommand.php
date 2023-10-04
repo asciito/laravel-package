@@ -91,5 +91,29 @@ trait HasInstallCommand
         }
 
         $command->addOption('all', description: 'Install all the package components');
+
+        $command::macro('sponsor', function (string $message, string $url) use ($command) {
+            $ans = $command->confirm($message);
+
+            if (! $ans) {
+                return;
+            }
+
+            $url = urlencode($url);
+
+            if (PHP_OS_FAMILY == 'Darwin') {
+                exec("open $url");
+            }
+
+            if (PHP_OS_FAMILY == 'Windows') {
+                exec("start $url");
+            }
+
+            if (PHP_OS_FAMILY == 'Linux') {
+                exec("xdg-open $url");
+            }
+
+            $command->info('Thanks!');
+        });
     }
 }
