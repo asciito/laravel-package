@@ -4,9 +4,11 @@ namespace Asciito\LaravelPackage\Package;
 
 use Asciito\LaravelPackage\Package\Concerns\HasCommand;
 use Asciito\LaravelPackage\Package\Concerns\HasConfig;
+use Asciito\LaravelPackage\Package\Concerns\HasInstallCommand;
 use Asciito\LaravelPackage\Package\Concerns\HasMigration;
 use Asciito\LaravelPackage\Package\Contracts\WithCommand;
 use Asciito\LaravelPackage\Package\Contracts\WithConfig;
+use Asciito\LaravelPackage\Package\Contracts\WithInstallCommand;
 use Asciito\LaravelPackage\Package\Contracts\WithMigration;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Arr;
@@ -16,9 +18,9 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Symfony\Component\Finder\SplFileInfo;
 
-class Package implements WithCommand, WithConfig, WithMigration
+class Package implements WithCommand, WithConfig, WithMigration, WithInstallCommand
 {
-    use HasCommand, HasConfig, HasMigration;
+    use HasCommand, HasConfig, HasMigration, HasInstallCommand;
 
     /**
      * @var string The package name
