@@ -1,11 +1,12 @@
 <?php
 
-
 use Asciito\LaravelPackage\Package\Package;
 use Laravel\Prompts\Prompt;
+
 use function Pest\Laravel\artisan;
 
-trait PackageInstallCommandTest {
+trait PackageInstallCommandTest
+{
     protected function configurePackage(Package $package): void
     {
         $package
@@ -30,7 +31,6 @@ it('install command is registered', function () {
         ->expectsOutputToContain('package:install')
         ->assertSuccessful();
 
-
     artisan('package:install')
         ->expectsOutputToContain('Installing Package Components')
         ->expectsOutput('This is a message')
@@ -48,7 +48,7 @@ it('install config', function () {
 
     expect(config_path('one.php'))
         ->toBeFile()
-    ->and(config_path('two.php'))
+        ->and(config_path('two.php'))
         ->toBeFile();
 });
 

@@ -18,9 +18,9 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Symfony\Component\Finder\SplFileInfo;
 
-class Package implements WithCommand, WithConfig, WithMigration, WithInstallCommand
+class Package implements WithCommand, WithConfig, WithInstallCommand, WithMigration
 {
-    use HasCommand, HasConfig, HasMigration, HasInstallCommand;
+    use HasCommand, HasConfig, HasInstallCommand, HasMigration;
 
     /**
      * @var string The package name

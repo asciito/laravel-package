@@ -15,12 +15,12 @@ interface WithInstallCommand
     /**
      * Register and configure the installation command
      */
-    public function withInstallCommand(string $signature = '', ?Closure $after = null): static;
+    public function withInstallCommand(string $signature = '', Closure $after = null): static;
 
     /**
      * The installation command itself
      *
-     * @param Command $command The instance of the command to be run as the installation command
+     * @param  Command  $command The instance of the command to be run as the installation command
      */
     public function command(Command $command): int;
 

@@ -5,6 +5,7 @@ namespace Asciito\LaravelPackage\Package\Concerns;
 use Closure;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
+
 use function Laravel\Prompts\intro;
 use function Laravel\Prompts\outro;
 use function Laravel\Prompts\spin;
@@ -27,7 +28,7 @@ trait HasInstallCommand
         return $this->commandShouldAdded;
     }
 
-    public function withInstallCommand(string $signature = '', ?Closure $after = null): static
+    public function withInstallCommand(string $signature = '', Closure $after = null): static
     {
         $this->commandSignature = $signature;
 
@@ -50,7 +51,7 @@ trait HasInstallCommand
             $name = str($name);
 
             if ($all || $command->option($name)) {
-                spin(function () use($command, $name) {
+                spin(function () use ($name) {
                     Artisan::call(
                         'vendor:publish',
                         ['--tag' => $this->prefixWithPackageName($name)]
