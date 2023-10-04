@@ -2,7 +2,6 @@
 
 namespace Asciito\LaravelPackage\Package;
 
-use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\ServiceProvider;
 
