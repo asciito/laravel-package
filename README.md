@@ -9,6 +9,9 @@ This PHP package will help you to create Laravel packages way easier, at least
 for me.
 
 ---
+
+> :no_entry_sign: This project is not ready for production :no_entry_sign:
+
 ## Installation and usage
 
 To install the package is as simple as run the command:
