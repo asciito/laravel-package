@@ -144,7 +144,72 @@ read the [Documentation](#documentation) for more information.
 ---
 ## Documentation
 
-_Working..._
+The documentation is an extensive manuscript of how to configure different components (config, migrations, and commands).
+
+* [The Basics](#the-basics)
+  * [What is a package?](#what-is-a-package)
+  * [How to register a package](#how-to-register-a-package)
+  * [Configure your package](#configure-your-package)
+
+### The basics
+
+<details>
+
+<summary id="what-is-a-package">
+    <strong>What is a package?</strong>
+</summary>
+
+A package is a collection of components namespaced, so you can have more "packages" inside the same composer package. This can be kind of confusing, but this lets you separate a big project into small an self contain "packages". You will see this more in deep later.
+
+</details>
+
+<details>
+
+<summary id="how-to-register-a-package">
+    <strong>How to register a package</strong>
+</summary>
+
+It's time to register a package, so first we need to create a service provider and extend the class ```PackageServiceProvider```, then, implement the method ```configurePackage(Package $package): void```. Finally give a name to your package calling the method ```setName(string $name): static``` from the object $package.
+
+```php
+class YourPackageServiceProvider extends PackageServiceProvider
+{
+    protected function configurePackage(Package $package): void
+    {
+        $package->setName('<your-package-name>');
+    }
+}
+```
+
+> The ```$package``` parameter is an instance for this Package. A single package is created for every single ```ServiceProvider``` class that extends the ```PackageServiceProvider``` class, so be sure to give a unique name to your project.
+
+That's it, you successfully register your package... almost, the more important part is to add this ```ServiceProvider``` class to Laravel. You can do this by just simply adding it to your composer file.
+
+```json
+{
+    "extras": {
+        "laravel": {
+            "providers": [
+                "\\Vendor\\YourPackageName\\YourPackageServiceProvider"      
+            ]
+        }
+    }
+}
+```
+
+> From Laravel 5.5 and above
+
+Doing this will auto-discover your service provider, and now that's all, your package is fully register on Laravel.
+
+</details>
+
+<details>
+<summary>
+    <strong>Configure your package</strong>
+</summary>
+
+There are three ways to configure your package, and these are called **component**. Every component will configure one part of your package with files that can be uses directly in Laravel or by publishing it for user personalization.
+</details>
 
 ---
 ### Edit Folder Structure
