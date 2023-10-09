@@ -10,7 +10,7 @@ for me.
 
 ---
 
-> :no_entry_sign: This project is not ready for production :no_entry_sign:
+># :warning: This project is not ready for production :warning:
 
 ## Installation and usage
 
