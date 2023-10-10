@@ -1,7 +1,12 @@
 {
     "name": "asciito/laravel-package",
     "description": "The simple package to build packages for Laravel",
-    "keywords": ["laravel", "package", "tool", "build"],
+    "keywords": [
+        "laravel",
+        "package",
+        "tool",
+        "build"
+    ],
     "type": "library",
     "authors": [
         {
