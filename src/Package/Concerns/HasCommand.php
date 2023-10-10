@@ -55,7 +55,7 @@ trait HasCommand
             return collect();
         }
 
-        return $this->getFilesFrom($this->getBasePath('console/commands'))
+        return $this->getFilesFrom($this->getBasePath('Console/Commands'))
             ->map(fn (string $path): string => Str::of($path)
                 ->basename('.php')
                 ->prepend(
