@@ -8,7 +8,15 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest, windows, macos]
+        php: [8.1, 8.2]
+        stability: [prefer-lowest, prefer-stable]
+    runs-on: ${{ matrix.os }}
+
+    name: Running Laravel [${{ matrix.laravel }} - ${{ matrix.stability }}] with PHP [${{ matrix.php }}] on OS [${{ matrix.os }}]
 
     steps:
       - name: Checkout code
@@ -17,7 +25,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.2
+          php-version: ${{ matrix.php }}
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo
           coverage: none
 
@@ -25,4 +33,4 @@ jobs:
         run: composer install --no-progress --no-interaction --prefer-dist
 
       - name: Execute tests
-        run: vendor/bin/pest
+        run: vendor/bin/pest --ci
