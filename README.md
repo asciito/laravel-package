@@ -76,7 +76,7 @@ class LaravelPackageServiceProvider extends PackageServiceProvider
 > 
 > e.g.
 > 
-> **\<vendor>/<your-package>**
+> **\<vendor>\/<your-package>**
 > 
 > The package name would be **<your-package>**, only.
 > 
