@@ -212,7 +212,7 @@ Doing this will auto-discover your service provider, and now that's all, your pa
 </details>
 
 <details>
-<summary>
+<summary id="configure-your-package">
     <strong>Configure your package</strong>
 </summary>
 
