@@ -153,6 +153,8 @@ The documentation is an extensive manuscript of how to configure different compo
   * [What is a package?](#what-is-a-package)
   * [How to register a package](#how-to-register-a-package)
   * [Configure your package](#configure-your-package)
+    * [Configuration Component](#configuration-component)
+      * [Un-publish configuration](#un-publish-configuration)
 
 ### The basics
 
@@ -172,9 +174,12 @@ A package is a collection of components namespaced, so you can have more "packag
     <strong>How to register a package</strong>
 </summary>
 
-It's time to register a package, so first we need to create a service provider and extend the class ```PackageServiceProvider```, then, implement the method ```configurePackage(Package $package): void```. Finally give a name to your package calling the method ```setName(string $name): static``` from the object $package.
+Register a package it's easy, we need to create a service provider and extend the class ```PackageServiceProvider```, then, implement the method ```configurePackage(Package $package): void```. Finally give a name to your package calling the method ```setName(string $name): static``` from the object $package.
 
 ```php
+use Asciito\LaravelPackage\Package\Package;
+use Asciito\LaravelPackage\Package\PackageServiceProvider;
+
 class YourPackageServiceProvider extends PackageServiceProvider
 {
     protected function configurePackage(Package $package): void
@@ -212,6 +217,68 @@ Doing this will auto-discover your service provider, and now that's all, your pa
 </summary>
 
 There are three ways to configure your package, and these are called **component**. Every component will configure one part of your package with files that can be uses directly in Laravel or by publishing it for user personalization.
+
+
+#### Configuration Component
+
+If you want to have config parameters available with the method ```config()```, and being able to publish those files, call the method ```withConfig(string|array $config = [], bool $publish = true)```.
+
+```php
+use Asciito\LaravelPackage\Package\Package;
+use Asciito\LaravelPackage\Package\PackageServiceProvider;
+
+class YourPackageServiceProvider extends PackageServiceProvider
+{
+    protected function configurePackage(Package $package): void
+    {
+        $package
+            ->setName('<your-package-name>')
+            ->withConfig();
+    }
+}
+```
+
+If you call this method without any parameter, this will only register those files in the default config folder of your package.
+
+See the next example 👇
+
+```
+<your-package>
+├─ src
+│   └─ YourPackageServiceProvider.php
+├─ config <------------------------------------ This folder
+│   └─ package-config.php
+```
+> 💡 Remember, we follow the Laravel project structure
+
+Also, if you want to register config files outside this folder, you can do that too, just add the absolute path
+to the ```withConfig()``` method call, and you should be able to use it too.
+
+```php
+use Asciito\LaravelPackage\Package\Package;
+use Asciito\LaravelPackage\Package\PackageServiceProvider;
+
+class YourPackageServiceProvider extends PackageServiceProvider
+{
+    protected function configurePackage(Package $package): void
+    {
+        $package
+            ->setName('<your-package-name>')
+            ->withConfig('/this/is/an/absolute/path/to/a/config/file.php');
+    }
+}
+```
+
+or even better, you can use the ```basePath()``` method from your package instance to get the path to some file.
+Something like this: ```$package->basePath('other/folder/file.php')```.
+
+> The base path is calculated from where you define your Service provider that
+extends the ```PackageServiceProvider```.
+
+##### Un-publish Configuration
+
+*Working*...
+
 </details>
 
 ---
