@@ -1,6 +1,6 @@
 <?php
 
-namespace Workbench\App\Console\Commands\extra;
+namespace Workbench\App\Console\Commands\Extra;
 
 use Illuminate\Console\Command;
 
