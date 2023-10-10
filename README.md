@@ -72,7 +72,7 @@ class LaravelPackageServiceProvider extends PackageServiceProvider
 ```
 
 > Keep in mind if you don't provide the package name, the package will use the name from the composer.json file, excluding
-> only the **vendor** part. 
+> only the **vendor** part.
 > 
 > e.g.
 > 
@@ -80,6 +80,8 @@ class LaravelPackageServiceProvider extends PackageServiceProvider
 > 
 > The package name would be **<your-package>**, only.
 > 
+> The composer.json is only used if the Service Provider is at the first level of your ```src``` folder, if not, this will
+> throw and error
 
 
 ### Register commands
