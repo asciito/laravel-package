@@ -157,6 +157,7 @@ The documentation is an extensive manuscript of how to configure different compo
   * [Configure your package](#configure-your-package)
     * [Configuration Component](#configuration-component)
       * [Un-publish configuration](#un-publish-configuration)
+      * [Exclude configuration](#exclude-configuration)
 
 ### The basics
 
@@ -266,7 +267,7 @@ class YourPackageServiceProvider extends PackageServiceProvider
     {
         $package
             ->setName('<your-package-name>')
-            ->withConfig('/this/is/an/absolute/path/to/a/config/file.php');
+            ->withConfig('/absolute/path/to/a/config/file.php');
     }
 }
 ```
@@ -279,7 +280,42 @@ extends the ```PackageServiceProvider```.
 
 ##### Un-publish Configuration
 
-*Working*...
+To un-publish a config file that you might want to only use internally, call the method ```$package->withConfig()``` with the full path of the config file you want
+to **un-publish**, and set the second parameter as ```false```. This will prevent to publish the config file you specify only if the file was register previously.
+
+```php
+use Asciito\LaravelPackage\Package\Package;
+use Asciito\LaravelPackage\Package\PackageServiceProvider;
+
+class YourPackageServiceProvider extends PackageServiceProvider
+{
+    protected function configurePackage(Package $package): void
+    {
+        $package
+            ->setName('<your-package-name>')
+            ->withConfig('/absolute/path/to/a/config/file.php', false);
+    }
+}
+```
+
+You can still using the config file, but if you run the command ```php artisan vendor:publish --tag=<your-package>-config``` the file un-publish wouldn't be published.
+
+##### Exclude Configuration
+
+This action will not let you use a config file in the package, either using the configuration or publishing it, and you could exclude a file calling the method ```$package->exclude()```.
+
+```php
+class YourPackageServiceProvider extends PackageServiceProvider
+{
+    protected function configurePackage(Package $package): void
+    {
+        $package
+            ->setName('<your-package-name>')
+            ->withConfig()
+            ->exclude('/absolute/path/to/a/config/file.php');
+    }
+}
+```
 
 </details>
 
