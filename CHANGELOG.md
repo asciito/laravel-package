@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.2](https://github.com/asciito/laravel-package/compare/v0.4.1...v0.4.2) (2023-10-17)
+
+
+### Bug Fixes
+
+* change validation on getInstallSignature ([e95659a](https://github.com/asciito/laravel-package/commit/e95659a6c37a02910b3235582b4b7c4577589b5c))
+
 ## [0.4.1](https://github.com/asciito/laravel-package/compare/v0.4.0...v0.4.1) (2023-10-10)
 
 
