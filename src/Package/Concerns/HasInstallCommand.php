@@ -77,7 +77,7 @@ trait HasInstallCommand
 
     public function getInstallCommandSignature(): string
     {
-        if (isset($this->commandSignature)) {
+        if (filled($this->commandSignature)) {
             return $this->commandSignature;
         }
 
