@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.4.4](https://github.com/asciito/laravel-package/compare/v0.4.3...v0.4.4) (2024-04-29)
+
+
+### Miscellaneous Chores
+
+* **deps:** bump aglipanci/laravel-pint-action from 2.3.1 to 2.4 ([8c52fc8](https://github.com/asciito/laravel-package/commit/8c52fc8fd4ffc65dbdcc46d80552158bdb7f54bb))
+* **deps:** bump dependabot/fetch-metadata from 1.6.0 to 2.1.0 ([02db929](https://github.com/asciito/laravel-package/commit/02db929d223cb67682d0965b5af89a8914dee27b))
+* **deps:** bump ramsey/composer-install from 2 to 3 ([5c7a950](https://github.com/asciito/laravel-package/commit/5c7a950036cd97436a9c169367487c52a27a0025))
+
 ## [0.4.3](https://github.com/asciito/laravel-package/compare/v0.4.2...v0.4.3) (2024-01-13)
 
 
