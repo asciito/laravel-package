@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.4.5](https://github.com/asciito/laravel-package/compare/v0.4.4...v0.4.5) (2025-07-12)
+
+
+### Miscellaneous Chores
+
+* **deps:** bump aglipanci/laravel-pint-action from 2.4 to 2.5 ([a30d5a7](https://github.com/asciito/laravel-package/commit/a30d5a70ba53638813f4346ac87d8e609aa56a3f))
+* **deps:** bump dependabot/fetch-metadata from 2.1.0 to 2.2.0 ([7a2c1ad](https://github.com/asciito/laravel-package/commit/7a2c1ada9dc82fc89948d1a6496a94df836cbf85))
+* **deps:** bump dependabot/fetch-metadata from 2.2.0 to 2.3.0 ([124bb16](https://github.com/asciito/laravel-package/commit/124bb16fd34b71ca09f48d887f5e9d1182a7458e))
+* **deps:** bump dependabot/fetch-metadata from 2.3.0 to 2.4.0 ([7aeb935](https://github.com/asciito/laravel-package/commit/7aeb935d13285909aeda638d4664782c15fb1558))
+* **deps:** bump stefanzweifel/git-auto-commit-action from 5 to 6 ([627073a](https://github.com/asciito/laravel-package/commit/627073aaab933bd8c619d6ab0c7b9218f305b750))
+
 ## [0.4.4](https://github.com/asciito/laravel-package/compare/v0.4.3...v0.4.4) (2024-04-29)
 
 
